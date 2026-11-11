@@ -571,7 +571,7 @@ def internal_log_page():
       <section>
         <p><strong>* Phim 20×25:</strong> {n(f20_boxes)} hộp / {n(f20_covers)} vỏ
           <b class="sum">Σ {n(total20)}</b></p>
-        <p>– Phim lẻ / phòng: {n(f20_room)} phim <span class="side">Sử dụng: {n(used20)} phim</span></p>
+        <p>– Phòng A107: {n(f20_room)} phim <span class="side">Sử dụng: {n(used20)} phim</span></p>
         <p class="hint">Phim trên hệ thống: {n(remaining20)}</p>
       </section>
       <h2>Báo cáo giao ban {e(date_text)}</h2>
@@ -637,7 +637,7 @@ def internal_log_page():
                        "ct_ca":ct_cases,"ct_phim":ct_films,"mri_ca":mri_cases,"mri_phim":mri_films},
         "phim_25x30":{"hop":f25_boxes,"vo":f25_covers,"phong_a107":a107,
                        "tong":total25,"ton_he_thong":remaining25,"su_dung":used25},
-        "phim_20x25":{"hop":f20_boxes,"vo":f20_covers,"phim_le_phong":f20_room,
+        "phim_20x25":{"hop":f20_boxes,"vo":f20_covers,"phong_a107":f20_room,
                        "tong":total20,"ton_he_thong":remaining20,"su_dung":used20}
     }
     st.download_button("TẢI BÁO CÁO GIAO BAN (.json)",
