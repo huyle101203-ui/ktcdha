@@ -4126,6 +4126,24 @@ def internal_log_page():
     st.warning("Dữ liệu có tên bệnh nhân là thông tin nhạy cảm. Chỉ sử dụng trên hệ thống được bệnh viện cho phép; "
                "không chia sẻ file báo cáo công khai.")
 
+def _ktc_gemini_error_detail(err):
+    """Extract a safe, bounded Google API error; never display key or request URL."""
+    try:
+        raw = err.read(8192).decode("utf-8", errors="replace")
+        obj = _json.loads(raw)
+        item = obj.get("error", {})
+        message = str(item.get("message", "Không có thông tin chi tiết từ Google."))
+        status = str(item.get("status", ""))
+        # Redact accidental secret echoes in remote error bodies.
+        key = str(st.secrets.get("GEMINI_API_KEY", "")).strip()
+        if key:
+            message = message.replace(key, "[API KEY ĐÃ ẨN]")
+            status = status.replace(key, "[API KEY ĐÃ ẨN]")
+        return (f"{status}: {message}" if status else message)[:900]
+    except (ValueError, TypeError, AttributeError):
+        return "Google không trả về thông báo lỗi có thể đọc được."
+
+
 def render_ai_portal():
     """Chat trực tiếp qua Gemini API, giới hạn số lượt và không tự phát sinh phí."""
     import urllib.request
@@ -4168,6 +4186,44 @@ def render_ai_portal():
     if not isinstance(model, str) or not model.replace("-", "").replace(".", "").isalnum():
         st.error("GEMINI_MODEL không hợp lệ.")
         return
+
+    # Kiểm tra cấu hình bằng API models; không ghi log hoặc hiển thị khóa bí mật.
+    with st.expander("🔧 Kiểm tra kết nối Gemini (quản trị viên)"):
+        st.caption("Kiểm tra quyền truy cập và các model hỗ trợ generateContent. "
+                   "Không hiển thị API key.")
+        if st.button("KIỂM TRA KẾT NỐI AI", key="ktc-ai-diagnostic"):
+            try:
+                diag_req = urllib.request.Request(
+                    "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100",
+                    headers={"x-goog-api-key": str(api_key).strip()},
+                    method="GET",
+                )
+                with urllib.request.urlopen(diag_req, timeout=20) as diag_response:
+                    diag_data = _json.load(diag_response)
+                available = sorted(
+                    item["name"].split("/", 1)[-1]
+                    for item in diag_data.get("models", [])
+                    if "generateContent" in item.get("supportedGenerationMethods", [])
+                    and isinstance(item.get("name"), str)
+                )
+                if available:
+                    st.success("API key truy cập được danh sách model Gemini.")
+                    if model in available:
+                        st.success(f"Model đang chọn `{model}` có trong danh sách hỗ trợ generateContent.")
+                    else:
+                        st.warning(f"Model `{model}` không nằm trong danh sách trả về. "
+                                   "Chọn một model bên dưới và cập nhật GEMINI_MODEL trong Secrets.")
+                    st.code("\\n".join(available[:35]), language=None)
+                else:
+                    st.warning("API key hợp lệ để gọi danh sách, nhưng chưa có model generateContent "
+                               "trong kết quả đầu tiên. Kiểm tra quyền dự án và hạn mức.")
+            except urllib.error.HTTPError as diag_err:
+                detail = _ktc_gemini_error_detail(diag_err)
+                st.error(f"Kiểm tra thất bại (HTTP {diag_err.code}): {detail}")
+            except (urllib.error.URLError, TimeoutError):
+                st.error("Không kết nối được đến Google Gemini. Kiểm tra mạng hoặc thử lại sau.")
+            except (ValueError, KeyError, TypeError):
+                st.error("Google trả về dữ liệu không đúng định dạng dự kiến.")
 
     if "ktc_ai_history" not in st.session_state:
         st.session_state.ktc_ai_history = []
@@ -4255,15 +4311,16 @@ def render_ai_portal():
                 ])
                 st.session_state.ktc_ai_calls += 1
             except urllib.error.HTTPError as err:
+                detail = _ktc_gemini_error_detail(err)
                 if err.code == 429:
-                    st.warning("Đã chạm hạn mức Gemini API. Vui lòng thử lại sau; không tự chuyển sang gói trả phí.")
+                    st.warning(f"Gemini đang giới hạn lượt sử dụng (HTTP 429): {detail}")
                 elif err.code in (400, 404):
-                    st.error("Yêu cầu hoặc tên model chưa phù hợp với API key. "
-                             "Kiểm tra GEMINI_MODEL trong Streamlit Secrets.")
-                elif err.code in (401,403):
-                    st.error("API key không hợp lệ hoặc chưa có quyền dùng model này.")
+                    st.error(f"Gemini từ chối yêu cầu (HTTP {err.code}): {detail}")
+                    st.caption("Mở mục 'Kiểm tra kết nối Gemini' phía trên để xem model được cấp quyền.")
+                elif err.code in (401, 403):
+                    st.error(f"Gemini từ chối quyền truy cập (HTTP {err.code}): {detail}")
                 else:
-                    st.error(f"Không thể kết nối Gemini (mã HTTP {err.code}). Vui lòng thử lại.")
+                    st.error(f"Lỗi Gemini HTTP {err.code}: {detail}")
             except (urllib.error.URLError, TimeoutError):
                 st.error("Kết nối đến Gemini bị gián đoạn hoặc quá thời gian chờ.")
             except (ValueError, KeyError, IndexError):
