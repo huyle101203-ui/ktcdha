@@ -69,11 +69,217 @@ SUBS = {
 EN = {"X-quang":"RADIOGRAPHY", "CT":"COMPUTED TOMOGRAPHY", "MRI":"MAGNETIC RESONANCE"}
 if "modality" not in st.session_state: st.session_state.modality=None
 if "sub" not in st.session_state: st.session_state.sub=None
+if "xray_region" not in st.session_state: st.session_state.xray_region=None
+if "xray_part" not in st.session_state: st.session_state.xray_part=None
 
 def go(mod=None, sub=None):
     st.session_state.modality=mod
     st.session_state.sub=sub
+    st.session_state.xray_region=None
+    st.session_state.xray_part=None
+    st.session_state.xray_article=None
+    st.session_state.xray_group=None
+    st.session_state.scan_article=None
     st.rerun()
+
+
+# Danh mục tiêu đề kỹ thuật X-quang. Đây chỉ là tên bài, không phải nội dung kỹ thuật.
+XRAY_CHEST_GROUP = "Kỹ thuật chụp X-quang phổi"
+XRAY_CHEST_VIEWS = [
+    "Kỹ thuật chụp X-quang ngực thẳng",
+    "Kỹ thuật chụp X-quang ngực nghiêng",
+    "Kỹ thuật chụp X-quang ngực chếch",
+]
+XRAY_TECHNIQUES = [
+    XRAY_CHEST_GROUP,
+    "Kỹ thuật chụp X-quang cột sống cổ",
+    "Kỹ thuật chụp X-quang cột sống ngực",
+    "Kỹ thuật chụp X-quang cột sống thắt lưng",
+    "Kỹ thuật chụp X-quang xương cùng cụt",
+    "Kỹ thuật chụp X-quang bụng KUB",
+    "Kỹ thuật chụp X-quang bụng ASP",
+    "Kỹ thuật chụp X-quang khung chậu",
+    "Kỹ thuật chụp X-quang khớp háng",
+    "Kỹ thuật chụp X-quang xoang Blondeau",
+    "Kỹ thuật chụp X-quang nền sọ Hirtz",
+    "Kỹ thuật chụp X-quang xương mũi nghiêng",
+    "Kỹ thuật chụp X-quang sọ thẳng/nghiêng",
+    "Kỹ thuật chụp X-quang xương chũm Schüller",
+    "Kỹ thuật chụp X-quang cổ nghiêng tia mềm",
+    "Kỹ thuật chụp X-quang xương đòn",
+    "Kỹ thuật chụp X-quang khớp vai",
+    "Kỹ thuật chụp X-quang xương cánh tay",
+    "Kỹ thuật chụp X-quang khớp khuỷu",
+    "Kỹ thuật chụp X-quang xương cẳng tay",
+    "Kỹ thuật chụp X-quang cổ tay",
+    "Kỹ thuật chụp X-quang bàn tay",
+    "Kỹ thuật chụp X-quang xương đùi",
+    "Kỹ thuật chụp X-quang khớp gối",
+    "Kỹ thuật chụp X-quang xương cẳng chân",
+    "Kỹ thuật chụp X-quang cổ chân",
+    "Kỹ thuật chụp X-quang bàn chân",
+    "Kỹ thuật chụp X-quang phổi nhi AP",
+    "Kỹ thuật chụp X-quang xương ức",
+    "Kỹ thuật chụp X-quang cột sống toàn trục (Whole body)",
+    "Kỹ thuật chụp X-quang Lower leg",
+    "Kỹ thuật chụp X-quang VA"
+]
+
+# Tên kỹ thuật CT/MRI được chuẩn hóa để hiển thị, CHƯA xác minh
+# là tên nguyên văn trong danh mục kỹ thuật Bộ Y tế.
+CT_TECHNIQUES = [
+    "Chụp CLVT sọ não không tiêm thuốc cản quang",
+    "Chụp CLVT lồng ngực không tiêm thuốc cản quang",
+    "Chụp CLVT lồng ngực có tiêm thuốc cản quang",
+    "Chụp CLVT ổ bụng không tiêm thuốc cản quang",
+    "Chụp CLVT ổ bụng có tiêm thuốc cản quang",
+    "Chụp CLVT xoang cạnh mũi",
+    "Chụp CLVT hàm mặt",
+    "Chụp CLVT nha khoa",
+    "Chụp CLVT phần mềm vùng cổ không tiêm thuốc cản quang",
+    "Chụp CLVT phần mềm vùng cổ có tiêm thuốc cản quang",
+    "Chụp CLVT cột sống cổ",
+    "Chụp CLVT cột sống ngực",
+    "Chụp CLVT cột sống thắt lưng",
+    "Chụp CLVT chi trên",
+    "Chụp CLVT chi dưới",
+    "Chụp CLVT mạch máu não có tiêm thuốc cản quang (CTA)",
+    "Chụp CLVT động mạch phổi có tiêm thuốc cản quang (CTPA)",
+    "Chụp CLVT động mạch chủ ngực – bụng có tiêm thuốc cản quang (CTA)",
+    "Chụp CLVT động mạch vành có tiêm thuốc cản quang (CCTA)",
+    "Chụp CLVT mạch máu chi dưới có tiêm thuốc cản quang (CTA)",
+    "Chụp CLVT mạch máu chi trên có tiêm thuốc cản quang (CTA)",
+]
+MRI_TECHNIQUES = [
+    "Chụp CHT sọ não không tiêm thuốc đối quang từ",
+    "Chụp CHT sọ não có tiêm thuốc đối quang từ",
+    "Chụp CHT tuyến yên động học có tiêm thuốc đối quang từ (Dynamic)",
+    "Chụp CHT hốc mắt",
+    "Chụp CHT cột sống cổ",
+    "Chụp CHT cột sống ngực",
+    "Chụp CHT cột sống thắt lưng",
+    "Chụp CHT lồng ngực (phổi)",
+    "Chụp CHT ổ bụng không tiêm thuốc đối quang từ",
+    "Chụp CHT ổ bụng có tiêm thuốc đối quang từ",
+    "Chụp CHT vùng chậu không tiêm thuốc đối quang từ",
+    "Chụp CHT vùng chậu có tiêm thuốc đối quang từ",
+    "Chụp CHT khớp vai",
+    "Chụp CHT khớp khuỷu",
+    "Chụp CHT cổ tay",
+    "Chụp CHT khớp háng",
+    "Chụp CHT khớp gối",
+    "Chụp CHT cổ chân",
+    "Chụp CHT phần mềm chi",
+]
+if "scan_article" not in st.session_state:
+    st.session_state.scan_article = None
+
+def scan_library(mod):
+    selected = st.session_state.scan_article
+    titles = CT_TECHNIQUES if mod == "CT" else MRI_TECHNIQUES
+    short = "CLVT" if mod == "CT" else "CHT"
+    if selected is None:
+        st.markdown(f'<div class="sectiontitle">DANH SÁCH KỸ THUẬT CHỤP {short}</div>', unsafe_allow_html=True)
+        st.caption(f"{len(titles)} kỹ thuật · Tên hiển thị đang chờ đối chiếu với danh mục Bộ Y tế.")
+        query = st.text_input("Tìm kỹ thuật", placeholder="Nhập vùng khảo sát, mạch máu, thuốc...", key=f"scan-query-{mod}")
+        results = [name for name in titles if query.casefold().strip() in name.casefold()]
+        if not results:
+            st.info("Không tìm thấy kỹ thuật phù hợp.")
+        for index, name in enumerate(results):
+            with st.container(border=True):
+                c1, c2 = st.columns([5, 1], vertical_alignment="center")
+                with c1:
+                    st.markdown(f"**{name}**")
+                with c2:
+                    if st.button("Xem →", key=f"scan-{mod}-{index}"):
+                        st.session_state.scan_article = name
+                        st.rerun()
+    else:
+        if st.button("← DANH SÁCH KỸ THUẬT", key="scan-back"):
+            st.session_state.scan_article = None
+            st.rerun()
+        st.title(selected)
+        st.caption("Tên kỹ thuật đang chờ đối chiếu với văn bản Bộ Y tế.")
+        articles = [
+            a for a in ARTICLES
+            if a.get("modality") == mod
+            and a.get("reviewed") is True
+            and str(a.get("title", "")).strip().casefold() == selected.casefold()
+        ]
+        if articles:
+            for article in articles:
+                st.markdown(article.get("content", ""))
+                for ref in article.get("references", []):
+                    if isinstance(ref, str) and ref.startswith(("https://", "http://")):
+                        st.markdown(f"Nguồn: {ref}")
+        else:
+            st.info("Chưa có bài học được kiểm duyệt cho kỹ thuật này.")
+            st.markdown("#### Nội dung sẽ bổ sung khi có tài liệu xác minh")
+            for part in ("Chỉ định và phạm vi khảo sát", "Chuẩn bị và an toàn người bệnh",
+                         "Tư thế và định vị", "Quy trình/chuỗi xung theo thiết bị",
+                         "Thuốc cản quang/đối quang từ (nếu có chỉ định)",
+                         "Tiêu chuẩn chất lượng hình ảnh", "Nguồn tài liệu và người kiểm duyệt"):
+                st.markdown(f"- {part}")
+            st.caption("Không tự động tạo thông số kỹ thuật hoặc hướng dẫn thực hành.")
+
+if "xray_article" not in st.session_state:
+    st.session_state.xray_article = None
+if "xray_group" not in st.session_state:
+    st.session_state.xray_group = None
+
+def xray_library():
+    chosen = st.session_state.xray_article
+    group = st.session_state.xray_group
+    if chosen is None:
+        if group == XRAY_CHEST_GROUP:
+            if st.button("← DANH SÁCH KỸ THUẬT", key="xray-group-back"):
+                st.session_state.xray_group = None
+                st.rerun()
+            st.markdown('<div class="sectiontitle">KỸ THUẬT CHỤP X-QUANG PHỔI</div>', unsafe_allow_html=True)
+            st.caption("Chọn tư thế chụp để mở bài học.")
+            titles = XRAY_CHEST_VIEWS
+        else:
+            st.markdown('<div class="sectiontitle">KỸ THUẬT CHỤP X-QUANG</div>', unsafe_allow_html=True)
+            st.caption(f"{len(XRAY_TECHNIQUES)} mục kỹ thuật · Chọn tên kỹ thuật để mở bài học. Nội dung chuyên môn sẽ được bổ sung sau khi kiểm chứng.")
+            query = st.text_input("Tìm kỹ thuật chụp", placeholder="Ví dụ: phổi, sọ, khớp gối...")
+            titles = [t for t in XRAY_TECHNIQUES if query.casefold().strip() in t.casefold() or (t == XRAY_CHEST_GROUP and "ngực" in query.casefold())]
+        if not titles:
+            st.info("Không tìm thấy kỹ thuật phù hợp.")
+        for index, title in enumerate(titles):
+            with st.container(border=True):
+                col1, col2 = st.columns([5, 1], vertical_alignment="center")
+                with col1:
+                    st.markdown(f"**{title}**")
+                with col2:
+                    if st.button("Xem →", key=f"xray-{index}-{title}"):
+                        if title == XRAY_CHEST_GROUP:
+                            st.session_state.xray_group = XRAY_CHEST_GROUP
+                        else:
+                            st.session_state.xray_article = title
+                        st.rerun()
+    else:
+        if st.button("← QUAY LẠI", key="xray-article-back"):
+            st.session_state.xray_article = None
+            st.rerun()
+        st.title(chosen)
+        # Chỉ hiển thị nội dung được đánh dấu đã kiểm duyệt trong articles.json.
+        items = [
+            a for a in ARTICLES
+            if a.get("modality") == "X-quang"
+            and a.get("reviewed") is True
+            and str(a.get("title", "")).strip().casefold() == chosen.casefold()
+        ]
+        if not items:
+            st.info("Bài này chưa có nội dung được kiểm duyệt. Bạn có thể bổ sung sau vào articles.json.")
+            st.markdown("#### Bố cục bài học dự kiến")
+            for section in ("Mục đích chụp", "Chuẩn bị người bệnh", "Tư thế chụp", "Tia trung tâm và điểm định tâm", "Giới hạn trường chiếu", "Tiêu chuẩn đánh giá ảnh", "Hình minh họa", "Nguồn tham khảo"):
+                st.markdown(f"- {section}")
+            st.caption("Chưa có hướng dẫn kỹ thuật hoặc thông số nào được tự động tạo.")
+        for article in items:
+            st.markdown(article.get("content", ""))
+            for ref in article.get("references", []):
+                if isinstance(ref, str) and ref.startswith(("https://", "http://")):
+                    st.markdown(f"Nguồn: {ref}")
 
 st.markdown('<div class="site-head"><div class="brand"><div class="brandmark">✚</div><div><div class="brandtitle">KTCĐHA</div><div class="brandsub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div><div class="headright">BY HUUHUY</div></div>', unsafe_allow_html=True)
 mod=st.session_state.modality
@@ -85,7 +291,10 @@ if mod is None:
         with col:
             st.markdown(f'<div class="modcard"><div class="modvisual">{ICONS[name]}</div><div class="modname">{name}</div><div class="moddesc">{EN[name]}</div></div>', unsafe_allow_html=True)
             if st.button(f"VÀO THƯ VIỆN {name.upper()}  →", key=f"open-{name}"):
-                go(name)
+                if name == "X-quang":
+                    go("X-quang", "Kỹ thuật X-quang")
+                else:
+                    go(name)
 elif sub is None:
     if st.button("← TRANG CHỦ", key="home"): go()
     st.markdown(f'<div class="sectiontitle">THƯ VIỆN {mod.upper()}</div>', unsafe_allow_html=True)
@@ -98,6 +307,12 @@ elif sub is None:
                 go(mod,title)
 else:
     if st.button(f"← QUAY LẠI {mod.upper()}",key="back"): go(mod)
+    if mod=="X-quang" and sub=="Kỹ thuật X-quang":
+        xray_library()
+        st.stop()
+    if mod in ("CT", "MRI") and sub=="Quy trình chụp":
+        scan_library(mod)
+        st.stop()
     st.markdown(f'<div class="sectiontitle">{sub} / {mod}</div>',unsafe_allow_html=True)
     q=st.text_input("Tìm bài học",placeholder="Nhập tên bài hoặc từ khóa...")
     def matches(a):
