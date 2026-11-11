@@ -4149,6 +4149,9 @@ def render_ai_portal():
     import json as _json
     import urllib.request
     import urllib.error
+    import urllib.parse
+    import re
+    import html
 
     st.markdown("""
     <style>
@@ -4187,22 +4190,19 @@ def render_ai_portal():
                  "Hãy sửa OPENAI_MODEL trong Secrets.")
         return
     st.caption(f"Chế độ thử nghiệm tiết kiệm · Model: `{model}` · "
-               "Tối đa 5 câu hỏi/phiên, 600 token trả lời/lượt.")
+               "Trả lời chi tiết · tìm hình minh họa từ Wikimedia Commons.")
     with st.expander("Chi phí và bảo mật API", expanded=False):
         st.markdown("API OpenAI **có tính phí theo token**, kể cả khi dùng để thử. "
                     "Bảng giá chính thức: [OpenAI API Pricing](https://openai.com/api/pricing/). "
                     "Số token sử dụng được hiển thị sau mỗi câu trả lời; "
                     "giá tiền chính xác phải đối chiếu bảng giá và trang Usage/Billing.")
-        st.warning("Giới hạn 5 lượt chỉ áp dụng **mỗi phiên trình duyệt**, "
-                   "không phải giới hạn chi tiêu toàn website. Nếu website công khai, "
-                   "nhiều người vẫn có thể sử dụng API và tiêu hao tín dụng. "
-                   "Giữ Auto-reload OFF và đặt hạn mức chi tiêu trong OpenAI Platform.")
+        st.warning("API tính phí theo token. Không có giới hạn chi tiêu toàn website trong mã này. "
+                   "Giữ Auto-reload OFF, theo dõi Usage và đặt ngân sách trong OpenAI Platform. "
+                   "Giới hạn ngân sách có thể không chặn ngay lập tức mọi yêu cầu.")
         st.caption("Không công khai OPENAI_API_KEY trên GitHub hoặc trong ảnh chụp.")
 
     if "ktc_openai_history" not in st.session_state:
         st.session_state.ktc_openai_history = []
-    if "ktc_openai_calls" not in st.session_state:
-        st.session_state.ktc_openai_calls = 0
     if "ktc_openai_usage" not in st.session_state:
         st.session_state.ktc_openai_usage = {"prompt": 0, "completion": 0}
     history = st.session_state.ktc_openai_history
@@ -4219,14 +4219,57 @@ def render_ai_portal():
             if msg.get("usage"):
                 u = msg["usage"]
                 st.caption(f"Token: đầu vào {u['prompt']:,} · đầu ra {u['completion']:,}")
+    with st.expander("🖼️ Tìm hình minh họa từ Wikimedia Commons", expanded=False):
+        st.caption("Ảnh nguồn mở, có thể không khớp hoàn toàn với câu hỏi. "
+                   "Chỉ dùng tham khảo, không dùng để chẩn đoán. "
+                   "Kiểm tra giấy phép ở trang nguồn trước khi tái sử dụng.")
+        image_query = st.text_input("Từ khóa ảnh (ưu tiên tiếng Anh)",
+                                    placeholder="Ví dụ: mastoid Schuller radiograph",
+                                    key="ktc_commons_query")
+        if st.button("Tìm hình minh họa", key="ktc_commons_search"):
+            st.session_state.ktc_commons_images = []
+            if image_query.strip():
+                try:
+                    params = urllib.parse.urlencode({
+                        "action":"query", "generator":"search",
+                        "gsrsearch":"filetype:bitmap " + image_query.strip()[:100],
+                        "gsrnamespace":6, "gsrlimit":6, "prop":"imageinfo",
+                        "iiprop":"url|extmetadata", "iiurlwidth":720, "format":"json"})
+                    req_image = urllib.request.Request(
+                        "https://commons.wikimedia.org/w/api.php?" + params,
+                        headers={"User-Agent":"KTC-DHA-Education/1.0"})
+                    with urllib.request.urlopen(req_image, timeout=12) as response:
+                        result = _json.load(response)
+                    pages = (result.get("query") or {}).get("pages", {})
+                    for item in pages.values():
+                        infos = item.get("imageinfo") or []
+                        if not infos:
+                            continue
+                        info = infos[0]
+                        metadata = info.get("extmetadata") or {}
+                        license_name = re.sub(
+                            r"<[^>]*>", "",
+                            (metadata.get("LicenseShortName") or {}).get("value",""))
+                        thumb, source = info.get("thumburl"), info.get("descriptionurl")
+                        if thumb and source and license_name:
+                            st.session_state.ktc_commons_images.append(
+                                (thumb, source, item.get("title",""), license_name))
+                        if len(st.session_state.ktc_commons_images) >= 3:
+                            break
+                    if not st.session_state.ktc_commons_images:
+                        st.info("Chưa tìm được ảnh phù hợp. Hãy thử từ khóa khác.")
+                except (urllib.error.URLError, TimeoutError, ValueError):
+                    st.warning("Không truy cập được Wikimedia Commons. Thử lại sau.")
+            else:
+                st.info("Nhập từ khóa trước khi tìm.")
+        for url, source, title, license_name in st.session_state.get("ktc_commons_images", []):
+            st.image(url, caption=title, use_container_width=True)
+            st.caption("Giấy phép: " + html.unescape(license_name))
+            st.markdown(f"[Xem nguồn và ghi công tác giả]({source})")
     u_total = st.session_state.ktc_openai_usage
-    st.caption(f"Đã gửi {st.session_state.ktc_openai_calls}/5 lượt trong phiên · "
-               f"Tổng token đầu vào: {u_total['prompt']:,} · đầu ra: {u_total['completion']:,}.")
-    if st.session_state.ktc_openai_calls >= 5:
-        st.warning("Phiên thử nghiệm đã đủ 5 lượt. Hạn mức này chỉ là giới hạn trên giao diện.")
-        return
-
-    question = st.chat_input("Nhập câu hỏi X-quang, CT, MRI...", max_chars=1200, key="ktc-openai-input")
+    st.caption(f"Tổng token phiên này: đầu vào {u_total['prompt']:,} · đầu ra {u_total['completion']:,}. "
+               "Xem chi phí thực tế trong OpenAI Usage.")
+    question = st.chat_input("Nhập câu hỏi X-quang, CT, MRI...", max_chars=2500, key="ktc-openai-input")
     if not question or not question.strip():
         return
     question = question.strip()
@@ -4236,13 +4279,15 @@ def render_ai_portal():
         "Không bịa nguồn, protocol, thông số, liều thuốc hay chỉ dẫn cấp cứu. "
         "Không khẳng định đã truy cập MRI Master, vnrad.tech hoặc văn bản Bộ Y tế "
         "khi không có công cụ duyệt web. Nêu giới hạn khi chưa xác minh. "
+        "Trả lời chi tiết với các đề mục: nguyên lý, cách thực hiện, tiêu chuẩn đánh giá, "
+        "lưu ý an toàn khi phù hợp. Không tự khẳng định có hình ảnh nếu chưa đính kèm. "
         "Không thay thế bác sĩ và quy trình bệnh viện. Không yêu cầu dữ liệu định danh bệnh nhân."
     )
     messages = [{"role":"system", "content":instruction}]
-    for item in history[-4:]:
+    for item in history[-8:]:
         messages.append({"role":item["role"], "content":item["text"][:1800]})
     messages.append({"role":"user", "content":question})
-    payload = {"model":model, "messages":messages, "temperature":0.25, "max_tokens":600}
+    payload = {"model":model, "messages":messages, "temperature":0.25, "max_tokens":1800}
     req = urllib.request.Request(
         "https://api.openai.com/v1/chat/completions",
         data=_json.dumps(payload, ensure_ascii=False).encode("utf-8"),
@@ -4254,7 +4299,6 @@ def render_ai_portal():
     with st.chat_message("assistant", avatar="🩻"):
         with st.spinner("KTCĐHA AI đang trả lời..."):
             # Count attempts before sending; do not automatically retry billable requests.
-            st.session_state.ktc_openai_calls += 1
             try:
                 with urllib.request.urlopen(req, timeout=45) as response:
                     data = _json.load(response)
