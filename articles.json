@@ -5,7 +5,7 @@
     "category": "Thông số kỹ thuật",
     "title": "TR và TE trong MRI",
     "summary": "Hai thông số thời gian quan trọng điều khiển tương phản ảnh MRI.",
-    "content": "**TR (Repetition Time)** là khoảng thời gian giữa các lần kích thích RF liên tiếp của cùng một lát cắt trong nhiều chuỗi xung. **TE (Echo Time)** là khoảng thời gian từ xung kích thích đến tâm tín hiệu echo.\\n\\nTrong spin echo thông thường, TR ngắn và TE ngắn tạo ưu thế tương phản T1; TR dài và TE dài tạo ưu thế tương phản T2. Hiệu ứng phụ thuộc loại chuỗi xung và các thông số khác.\\n\\n**Lưu ý:** Cần điều chỉnh theo máy, vùng chụp và mục tiêu lâm sàng.",
+    "content": "**TR (Repetition Time)** là khoảng thời gian giữa các lần kích thích RF liên tiếp của cùng một lát cắt trong nhiều chuỗi xung. **TE (Echo Time)** là khoảng thời gian từ xung kích thích đến tâm tín hiệu echo.\n\nTrong spin echo thông thường, TR ngắn và TE ngắn tạo ưu thế tương phản T1; TR dài và TE dài tạo ưu thế tương phản T2. Hiệu ứng phụ thuộc loại chuỗi xung và các thông số khác.\n\n**Lưu ý:** Cần điều chỉnh theo máy, vùng chụp và mục tiêu lâm sàng.",
     "references": [
       "https://mrimaster.com/"
     ]
@@ -16,7 +16,7 @@
     "category": "Thông số kỹ thuật",
     "title": "NEX/NSA và chất lượng ảnh",
     "summary": "Số lần thu nhận tín hiệu và sự đánh đổi giữa SNR với thời gian chụp.",
-    "content": "**NEX/NSA** biểu thị số lần trung bình hóa tín hiệu thu nhận. Trong điều kiện các yếu tố khác không đổi, SNR thường tăng gần theo căn bậc hai của NEX; thời gian thu nhận thường tăng theo NEX.\\n\\nVí dụ tăng NEX từ 1 lên 4 có thể cải thiện SNR xấp xỉ 2 lần, đồng thời tăng thời gian thu nhận tương ứng ở các thiết lập thông thường.",
+    "content": "**NEX/NSA** biểu thị số lần trung bình hóa tín hiệu thu nhận. Trong điều kiện các yếu tố khác không đổi, SNR thường tăng gần theo căn bậc hai của NEX; thời gian thu nhận thường tăng theo NEX.\n\nVí dụ tăng NEX từ 1 lên 4 có thể cải thiện SNR xấp xỉ 2 lần, đồng thời tăng thời gian thu nhận tương ứng ở các thiết lập thông thường.",
     "references": [
       "https://mrimaster.com/"
     ]
@@ -27,7 +27,7 @@
     "category": "Thông số kỹ thuật",
     "title": "Pitch trong CT xoắn ốc",
     "summary": "Tỷ lệ bước tiến bàn với tổng độ rộng chùm tia chuẩn trực.",
-    "content": "Trong CT xoắn ốc, **pitch** thường được định nghĩa là quãng đường bàn di chuyển trong một vòng quay chia cho tổng độ rộng chùm tia chuẩn trực tại tâm quay.\\n\\nPitch ảnh hưởng đến lấy mẫu dữ liệu, chất lượng ảnh và liều chiếu; mức ảnh hưởng thực tế phụ thuộc công nghệ máy và điều khiển dòng bóng tự động.",
+    "content": "Trong CT xoắn ốc, **pitch** thường được định nghĩa là quãng đường bàn di chuyển trong một vòng quay chia cho tổng độ rộng chùm tia chuẩn trực tại tâm quay.\n\nPitch ảnh hưởng đến lấy mẫu dữ liệu, chất lượng ảnh và liều chiếu; mức ảnh hưởng thực tế phụ thuộc công nghệ máy và điều khiển dòng bóng tự động.",
     "references": []
   },
   {
@@ -36,7 +36,7 @@
     "category": "Thông số kỹ thuật",
     "title": "kVp và mAs trong X-quang",
     "summary": "Các yếu tố kỹ thuật ảnh hưởng đến xuyên thấu và lượng photon.",
-    "content": "**kVp** liên quan đến năng lượng phổ tia X và khả năng xuyên thấu. **mAs** là tích dòng bóng và thời gian phát tia, liên quan đến số lượng photon phát ra.\\n\\nLựa chọn thông số phải cân bằng chất lượng ảnh và liều bức xạ, theo quy trình được phê duyệt tại cơ sở.",
+    "content": "**kVp** liên quan đến năng lượng phổ tia X và khả năng xuyên thấu. **mAs** là tích dòng bóng và thời gian phát tia, liên quan đến số lượng photon phát ra.\n\nLựa chọn thông số phải cân bằng chất lượng ảnh và liều bức xạ, theo quy trình được phê duyệt tại cơ sở.",
     "references": []
   },
   {
@@ -45,7 +45,371 @@
     "category": "Quy trình chụp",
     "title": "Quy trình MRI sọ não – khung tham khảo",
     "summary": "Các bước chuẩn bị, sàng lọc an toàn và nhóm chuỗi xung thường gặp.",
-    "content": "1. Xác nhận chỉ định, danh tính và sàng lọc an toàn MRI, đặc biệt thiết bị cấy ghép và vật kim loại.\\n2. Giải thích quy trình, chuẩn bị bệnh nhân và đặt coil đầu phù hợp.\\n3. Định vị và thu nhận các chuỗi xung theo chỉ định: thường gồm T1, T2, FLAIR, DWI/ADC; các chuỗi bổ sung tùy câu hỏi lâm sàng.\\n4. Kiểm tra nhiễu, chuyển động và độ bao phủ trước khi kết thúc.\\n\\n**Đây không phải protocol sử dụng trực tiếp:** thông số và chỉ định tiêm thuốc cần theo quy định cơ sở và bác sĩ phụ trách.",
+    "content": "1. Xác nhận chỉ định, danh tính và sàng lọc an toàn MRI, đặc biệt thiết bị cấy ghép và vật kim loại.\n2. Giải thích quy trình, chuẩn bị bệnh nhân và đặt coil đầu phù hợp.\n3. Định vị và thu nhận các chuỗi xung theo chỉ định: thường gồm T1, T2, FLAIR, DWI/ADC; các chuỗi bổ sung tùy câu hỏi lâm sàng.\n4. Kiểm tra nhiễu, chuyển động và độ bao phủ trước khi kết thúc.\n\n**Đây không phải protocol sử dụng trực tiếp:** thông số và chỉ định tiêm thuốc cần theo quy định cơ sở và bác sĩ phụ trách.",
     "references": []
+  },
+  {
+    "title": "Giải phẫu và mốc định vị X-quang sọ – xoang",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Giải phẫu và mốc định vị X-quang sọ – xoang\n\n\n#### Kiến thức và hình ảnh liên quan\n\nXương sọ: 08 xương Xương mặt: 14 xương\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-01-p002.jpg]]\n\n#### Kiến thức và hình ảnh liên quan\n\nXương trán Xương đỉnh 02 Xương chẩm Xương thái dương 02 Xương bướm Xương sàng Xương hàm trên 02 Xương gò má 02 Xương lệ 02 Xương mũi 02 Xương xoăn mũi dưới 02 Xương khẩu cái 02 Xương lá mía Xương hàm dưới\n\n\n#### Kiến thức và hình ảnh liên quan\n\nXoang trán Xoang sàng Xoang bướm Xoang hàm trên\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-01-p004.jpg]]\n\n#### Kiến thức và hình ảnh liên quan\n\nXoang trán Xoang bướm Xoang sàng Xoang hàm trên\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-01-p006.jpg]]\n\n#### Mốc giải phẫu tham chiếu\n\nĐiểm gian mày Điểm gốc mũi Nhân trung Đỉnh cằm Lỗ tai ngoài Điểm góc hàm Điểm ụ chẩm ngoài\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-01-p007.jpg]]\n\n#### Mốc giải phẫu tham chiếu\n\nBờ dưới hốc mắt Đuôi mắt\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-01-p009.jpg]]\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-01-p011.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-01-p002.jpg",
+      "images/xquang-so-xoang/so-xoang-01-p004.jpg",
+      "images/xquang-so-xoang/so-xoang-01-p006.jpg",
+      "images/xquang-so-xoang/so-xoang-01-p007.jpg",
+      "images/xquang-so-xoang/so-xoang-01-p009.jpg",
+      "images/xquang-so-xoang/so-xoang-01-p011.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "references": [],
+    "id": "xr-so-xoang-01"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang sọ thẳng/nghiêng",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang sọ thẳng/nghiêng\n\n\n#### Tư thế và kỹ thuật chụp\n\n- Bệnh nhân đứng hoặc nằm sấp trên bàn chụp.\n- Trán và mũi sát flim, gốc mũi vào khoảng trung tâm film.\n- Chỉnh mặt phẳng MSP vuông góc với film, trục nối 2 lỗ tai ngoài song song với film, đồng thời đường OML vuông góc với film.\n- Tia trung tâm vuông góc với film, đi vào điểm trên ụ chẩm ngoài 2-3cm, đi ra gốc mũi và tới film.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-02-p015.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Để thực hiện tư thế này, bệnh nhân có thể đứng hoặc nằm. Tư thế nằm rất hữu ích trong trường hợp bệnh nhân chấn thương không di chuyển được.\n- Tư thế nằm ngửa hoàn toàn tương tự tư thế nằm sấp. AP, PA\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Lấy được toàn bộ sọ - mặt.\n- Sống mũi vào giữa film.\n- Bóng xương đá chồng lên hốc mắt.\n- Hốc mắt và các xoang 2 bên cân đối.\n- Film có độ nét và độ tương phản.\n- Film có tên tuổi, dấu phải trái, ngày tháng năm chụp.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-02-p017.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\n- Bệnh nhân nằm sấp trên bàn chụp, đầu nghiêng về 1 bên.\n- Tay bên không chụp để xuôi, tay bên chụp tì nhẹ len mặt bàn, chân duỗi thẳng.\n- Để đầu nghiêng hoàn toàn, có thể lót đệm dưới mặt bệnh nhân hoặc tay bệnh nhân nắm lại và để dưới cằm.\n- Chỉnh mặt phẳng MSP song song với film, trục nối 2 hốc mắt vuông góc với film.\n- Tia trung tâm vuông góc với film, khu trú vào điểm nằm trên trung điểm đường Reid khoảng 2 – 2.5cm.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-02-p020.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\n- Sọ nghiêng là tư thế được chỉ định để bổ sung thông tin chẩn đoán cho tư thế sọ thẳng.\n- Ngoài tư thế nằm sấp, sọ nghiêng còn được thực hiện ở tư thế đứng, ngồi.\n- Tư thế nằm ngửa được sử dụng trong trường hợp bệnh nhân chấn thương nặng, không di chuyển được.\n\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nSỌ NGHIÊNG\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Lấy được toàn bộ sọ - mặt.\n- Trần 2 hốc mắt chồng lên nhau.\n- 2 cánh lớn xương bướm chồng lên nhau.\n- Xương chũm và ống tai ngoài 2 bên chồng lên nhau.\n- Lồi cầu xương hàm dưới 2 bên chồng lên nhau.\n- Hố yên là 1 đường nhỏ, rõ nét và không có hình bóng đôi.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-02-p023.jpg]]\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-02-p024.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-02-p015.jpg",
+      "images/xquang-so-xoang/so-xoang-02-p017.jpg",
+      "images/xquang-so-xoang/so-xoang-02-p020.jpg",
+      "images/xquang-so-xoang/so-xoang-02-p023.jpg",
+      "images/xquang-so-xoang/so-xoang-02-p024.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "references": [],
+    "id": "xr-so-xoang-02"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Towne",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Towne\n\n\n#### Tư thế và kỹ thuật chụp\n\n- Tên khác: Worms Bretton.\n- Tư thế này giúp đánh giá tổng quan nền sọ, xương đá,… và là tư thế quan sát rõ nhất vôi hóa tuyến tùng.\n- Bệnh nhân nằm ngửa trên bàn, tay chân duỗi thẳng, chỉnh chẩm gáy vào trung tâm film.\n- Chỉnh mặt phẳng chính diện vuông góc với film, đường IOML vuông góc với film.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-03-p026.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nTia trung tâm chếch về phía chân 30o, khu trú vào đường chân tóc, đi qua đường nối 2 lỗ tai ngoài và tới film 30o\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-03-p027.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Có thể thực hiện kỹ thuật này khi đầu bệnh nhân được đặt trên film tạo với bàn chụp 1 góc 30o. Lúc đó tia trung tâm sẽ thẳng góc với film, khu trú vào đường chân tóc.\n- Thay vì chỉnh đường IOML vuông góc với film, ta có thể chỉnh đường OML vuông góc với film. Lúc đó tia X chếch khoảng 40o về phía chân. TOWNE\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Khối mặt chuyển hết xuống dưới.\n- Xương chẩm chiếm gần hết vòm sọ.\n- Phía trên phim là khớp Lamda.\n- Giữa là xoang tĩnh mạch bên.\n- Phía dưới phim là lỗ chẩm, cung sau C1, mỏm nha, xương đá và các tế bào chũm.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-03-p029.jpg]]\n\n#### Giải phẫu X-quang và hình minh họa\n\nĐường khớp dọc Đường khớp Lambdoid Đường khớp Lambdoid Xoang tĩnh mạch bên Xoang tĩnh mạch bên Xương chẩm Xương chẩm Lỗ lớn Xương đá Ngành xương hàm dưới\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-03-p030.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-03-p026.jpg",
+      "images/xquang-so-xoang/so-xoang-03-p027.jpg",
+      "images/xquang-so-xoang/so-xoang-03-p029.jpg",
+      "images/xquang-so-xoang/so-xoang-03-p030.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "references": [],
+    "id": "xr-so-xoang-03"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Caldwell",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Caldwell\n\n\n#### Tư thế và kỹ thuật chụp\n\n- Bệnh nhân nằm sấp, chỉnh trán, mũi sát film và vào trung tâm film.\n- Chỉnh mặt phẳng MSP vuông góc với film, đường nối 2 lỗ tai ngoài song song với film.\n- Mặt bệnh nhân hơi cúi để đường OML vuông góc với film.\n- Tia trung tâm chếch về chân 15o, đi qua điểm trên ụ chẩm ngoài 1-1.5 cm, đi ra điểm gốc mũi và tới film. 15o\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-04-p032.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Chếch tia về chân 15o sẽ làm cho bờ xương đá nằm ở 1/3 dưới của ổ mắt.\n- Chếch tia về chân 25 – 30o giúp thấy rõ hơn khe ổ mắt trên và lỗ tròn.\n- Với các bệnh nhân chấn thương, kỹ thuật Caldwell có thể thực hiện ở tư thế nằm ngửa, tia chếch lên đầu 15o. CALDWELL\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Lấy hết hốc mắt, xoang hàm, vách ngăn mũi, xương gò má,…\n- Vách ngăn mũi vào giữa film.\n- Hốc mắt, xoang hàm 2 bên cân đối.\n- Xương đá nằm ở 1/3 dưới ổ mắt.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-04-p034.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nPA Axial 15o PA Axial 30o\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-04-p035.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-04-p032.jpg",
+      "images/xquang-so-xoang/so-xoang-04-p034.jpg",
+      "images/xquang-so-xoang/so-xoang-04-p035.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      32,
+      33,
+      34,
+      35
+    ],
+    "references": [],
+    "id": "xr-so-xoang-04"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Blondeau",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Blondeau\n\n\n#### Tư thế và kỹ thuật chụp\n\nTên khác: Waters, Waldron. Chỉ định:\n- Bệnh lý viêm xoang.\n- Chấn thương, khối u vùng hàm mặt.\n- Bệnh nhân nằm sấp trên bàn chụp, 2 tay chống nhẹ lên bàn, 2 chân duỗi thẳng.\n- Đặt cằm sát film, chỉnh mặt phẳng MSP vuông góc với film, trục 2 lỗ tai ngoài song song với film.\n- Mặt bệnh nhân hơi ngửa sao cho đường OML tạo với film 1 góc 37 – 40o.\n- Tia trung tâm vuông góc với film, khu trú vào điểm nằm trên ụ chẩm ngoài 10 – 12cm, đi ra nhân trung và tới film. 37o\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-05-p036.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\n- Khi chụp có thể há miệng để khảo sát thêm xoang bướm.\n- Cách nhận biết đầu bệnh nhân đã ngửa đủ: đầu mũi cách film 1.5 – 2cm.\n- Kỹ thuật này có thể thực hiện ở tư thế đứng/ngồi để khảo sát mức dịch trong xoang.\n- Đối với bệnh nhân chấn thương không thể nằm sấp, kỹ thuật này sẽ được thực hiện ở tư thế nằm ngửa.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-05-p037.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nBLONDEAU\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Khối xương hàm mặt chuyển lên trên.\n- Nền sọ và xương chẩm chuyển xuống dưới.\n- Vách ngăn mũi vào giữa film.\n- Hốc mắt và các xoang 2 bên cân đối.\n- Xương đá không chồng vào đáy xoang hàm.\n- Nếu há miệng sẽ thấy được xoang bướm nằm dưới cung răng hàm trên.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-05-p039.jpg]]\n\n#### Giải phẫu X-quang và hình minh họa\n\nXoang trán Mỏm gò má của xương trán Hốc mắt Bờ dưới hốc mắt Vách ngăn mũi Xương gò má Cung gò má Mỏm vẹt hàm dưới Xoang bướm Xoang hàm trên Lưỡi Xương hàm dưới\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-05-p041.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-05-p036.jpg",
+      "images/xquang-so-xoang/so-xoang-05-p037.jpg",
+      "images/xquang-so-xoang/so-xoang-05-p039.jpg",
+      "images/xquang-so-xoang/so-xoang-05-p041.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42
+    ],
+    "references": [],
+    "id": "xr-so-xoang-05"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Hirtz",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Hirtz\n\n\n#### Tư thế và kỹ thuật chụp\n\nTên khác: SMV (Submentovertex). Chỉ định:\n- Các tổn thương nền sọ, chấn thương cung gò má.\n- Thăm khám xoang, lỗ nền sọ, xương đá,…\n- Đặt film trên ghế sao cho ghế thấp hơn mặt bàn 10 – 15cm.\n- Bệnh nhân nằm ngửa, 2 đầu gối gập, 2 tay bám vào mép bàn, đầu ngửa tối đa ra phía sau, đỉnh đầu sát film.\n- Chỉnh mặt phẳng MSP vuông góc với film, mặt phẳng IOM song song với film.\n- Tia trung tâm chếch lên đầu 5 – 10o so với phương thẳng đứng, khu trú vào điểm giữa đường nối 2 góc hàm, tia ra đỉnh sọ và tới film. 5 – 10o\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-06-p043.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nVới bệnh nhân cổ ngắn:\n- Đặt film sát đỉnh đầu bệnh nhân.\n- Chỉnh mặt phẳng MSP vuông góc với film, mặt phẳng IOM song song với film.\n- Bẻ đầu đèn sao cho tia trung tâm tạo với đường IOML 1 góc 80 – 90o.\n- Tia trung tâm khu trú vào trung điểm đường nối 2 góc hàm, ra đỉnh sọ và tới film.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-06-p044.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nVới bệnh nhân chấn thương:\n- Chấn thương cột sống cổ là 1 chống chỉ định của tư thế Hirtz.\n- Khi bắt buộc phải chụp Hirtz cho bệnh nhân chấn thương cột sống cổ, thao tác phải hết sức cẩn thận, hạn chế tối đa việc ngửa cổ của bệnh nhân, tránh gây tổn thương tủy sống, mạch máu.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-06-p045.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nMột số lưu ý:\n- Ngoài tư thế nằm, kỹ thuật Hirtz còn thực hiện được ở tư thế ngồi để khảo sát mức dịch trong xoang.\n- Tư thế nằm sấp ít được sử dụng.\n\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nHIRTZ\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Răng cửa chồng lên xương trán.\n- Vách ngăn mũi vào giữa film.\n- Cung gò má 2 bên cân đối.\n- Thấy rõ hệ thống xoang (xoang sàng, xoang hàm, xoang bướm) và xương đá.\n- Thấy hệ thống lỗ nền sọ.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-06-p049.jpg]]\n\n#### Giải phẫu X-quang và hình minh họa\n\nMảnh thẳng đứng Cung gò má Xoang sàng Xoang hàm trên Lỗ bầu dục Lỗ tròn nhỏ Ngành xương hàm dưới Xoang bướm Xương đá Tế bào chũm Mỏm nha C2 Cung trước C1 Lỗ lớn\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-06-p051.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-06-p043.jpg",
+      "images/xquang-so-xoang/so-xoang-06-p044.jpg",
+      "images/xquang-so-xoang/so-xoang-06-p045.jpg",
+      "images/xquang-so-xoang/so-xoang-06-p049.jpg",
+      "images/xquang-so-xoang/so-xoang-06-p051.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ],
+    "references": [],
+    "id": "xr-so-xoang-06"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang cung gò má",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang cung gò má\n\n\n#### Kiến thức và hình ảnh liên quan\n\nXương gò má Xương hàm trên Cung gò má\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-07-p052.jpg]]\n\n#### Kiến thức và hình ảnh liên quan\n\nChụp 2 bên: Tư thế Hirtz/SMV. Chụp từng bên:\n- Bệnh nhân nằm ngửa hoặc ngồi, đầu tựa vào film.\n- Chỉnh bệnh nhân ngửa cằm sao cho đường IOML song song với film.\n- Xoay đầu về bên chụp khoảng 15o, đồng thời xoay cằm về bên chụp 15o.\n- Tia trung tâm vuông góc với đường IOML, khu trú vào giữa cung gò má cần chụp.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-07-p053.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Thường chụp cả 2 bên để so sánh.\n- Với các bệnh nhân chấn thương vùng cổ, bẻ đầu đèn sao cho tia X vuông góc với IOML, tuyệt đối không ngửa cổ bệnh nhân. CUNG GÒ MÁ 1 BÊN\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Thấy rõ cung gò má từng bên.\n- Xương đỉnh và xương hàm dưới không chồng lên cung gò má.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-07-p055.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-07-p052.jpg",
+      "images/xquang-so-xoang/so-xoang-07-p053.jpg",
+      "images/xquang-so-xoang/so-xoang-07-p055.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      52,
+      53,
+      54,
+      55,
+      56
+    ],
+    "references": [],
+    "id": "xr-so-xoang-07"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang hàm dưới chếch",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang hàm dưới chếch\n\n\n#### Kiến thức và hình ảnh liên quan\n\nMỏm vẹt Mỏm lồi cầu Lồi cầu xương hàm dưới Cổ Khuyết hàm dưới\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-08-p058.jpg]]\n\n#### Kiến thức và hình ảnh liên quan\n\nCằm Thân Ngành Mỏm vẹt Lồi cầu xương hàm dưới\n\n\n#### Kiến thức và hình ảnh liên quan\n\nPA AP Axial 15o\n\n\n#### Kiến thức và hình ảnh liên quan\n\nSMV Panoramic Radiology\n\n\n#### Tư thế và kỹ thuật chụp\n\nChỉ định:\n- Tìm gãy xương hàm dưới do chấn thương.\n- Bệnh lý răng như viêm quanh răng, răng mọc lệch,…\n- Chẩn đoán các khối u vùng hàm mặt.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-08-p062.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\n- Film đặt chếch 15o so với mặt bàn.\n- Bệnh nhân nằm nghiêng hoặc nằm sấp trên bàn chụp.\n- Chỉnh đầu bệnh nhân thật đúng ở tư thế nghiêng, chỉnh mặt phẳng MSP song song với mặt bàn.\n- Đặt mặt ngoài xương hàm bên cần chụp sát film.\n- Hơi xoay mặt về phía film để xương hàm dưới bên chụp song song với film, thường xoay khoảng 10 – 15o so với MSP.\n- Tia trung tâm chếch lên phía đầu 1 góc 10 – 15o so với phương thẳng đứng, khu trú vào trung điểm đường nối cằm và sụn giáp. 10 – 15o Tư thế nằm\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-08-p063.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nTư thế đứng 10 – 15o\n\n\n#### Tư thế và kỹ thuật chụp\n\nMột số lưu ý:\n- Trước khi chụp nên cho bệnh nhân ngửa cổ nhẹ để góc hàm không chồng vào cột sống cổ.\n- Với bệnh nhân chấn thương nặng, đặt film áp vào má bệnh nhân và thực hiện ngay trên xe nằm, không di chuyển bệnh nhân.\n\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nHÀM CHẾCH\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 55 – 60 / 70 – 75 |\n| mAs | 5.6 – 7.1 / 11 – 14 |\n| SID (cm) | 80 – 100 |\n| Grid | -/+ |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Xương hàm dưới, bao gồm thân xương và ngành xương vào trung tâm film.\n- Xương hàm dưới bên chụp tách khỏi xương hàm dưới bên đối diện.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-08-p067.jpg]]\n\n#### Giải phẫu X-quang và hình minh họa\n\nLồi cầu xương hàm dưới Ngành xương Thân xương Lỗ cằm Cằm\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-08-p068.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-08-p058.jpg",
+      "images/xquang-so-xoang/so-xoang-08-p062.jpg",
+      "images/xquang-so-xoang/so-xoang-08-p063.jpg",
+      "images/xquang-so-xoang/so-xoang-08-p067.jpg",
+      "images/xquang-so-xoang/so-xoang-08-p068.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69
+    ],
+    "references": [],
+    "id": "xr-so-xoang-08"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Stenvers",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Stenvers\n\n\n#### Kiến thức và hình ảnh liên quan\n\nXương thái dương trái Xương thái dương phải Xương đá Ống tai trong Lỗ tĩnh mạch cảnh Tháp xương đá\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-09-p070.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nChỉ định:\n- Vỡ xương đá, viêm xương đá.\n- Các khối u ở góc cầu tiểu não.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-09-p072.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nSTENVERS\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Mặt xương đá vào trung tâm film.\n- Thấy 2/3 xương chũm ở dưới.\n- Xương chẩm ở phần sau.\n- Thấy lồi cầu xương hàm dưới.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-09-p074.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-09-p070.jpg",
+      "images/xquang-so-xoang/so-xoang-09-p072.jpg",
+      "images/xquang-so-xoang/so-xoang-09-p074.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      70,
+      71,
+      72,
+      73,
+      74
+    ],
+    "references": [],
+    "id": "xr-so-xoang-09"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Mayer",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Mayer\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-10-p075.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMAYER\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 70 – 75 |\n| mAs | 20 – 25 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Hình tháp xương đá như một dải đậm dài ở trung tâm phim.\n- Phía trên xương đá có các tế bào chũm.\n- Phía trước tháp xương đá có hình lồi cầu của xương hàm dưới sát cạnh cung tiếp gò má.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-10-p077.jpg]]\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-10-p078.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-10-p075.jpg",
+      "images/xquang-so-xoang/so-xoang-10-p077.jpg",
+      "images/xquang-so-xoang/so-xoang-10-p078.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      75,
+      76,
+      77,
+      78
+    ],
+    "references": [],
+    "id": "xr-so-xoang-10"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Schüller",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Schüller\n\n\n#### Tư thế và kỹ thuật chụp\n\nChỉ định:\n- Viêm tai giữa\n- Chấn thương xương đá.\n- Bệnh nhân nằm sấp, nghiêng đầu về bên cần chụp.\n- Tai bên cần chụp sát fllm và vào giữa film, vành tai gấp.\n- Chỉnh mặt phẳng MSP song song với film, trục 2 hốc mắt vuông góc với film.\n- Tia trung tâm chếch về phía chân 25 – 30o so với phương thẳng đứng, khu trú vào điểm nằm trước 1 cm và nằm trên 7 cm so với lỗ tai ngoài. 25 – 30o\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-11-p079.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Thường chụp cả 2 bên để so sánh.\n- Kỹ thuật này có thể thực hiện ở tư thế đứng/ngồi. Schuller\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 65 – 70 |\n| mAs | 16 – 20 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Lỗ tai trong và ngoài chồng lên nhau, có hình sáng tròn hoặc bầu dục ở giữa film.\n- Phía sau có hình tổ ong sáng của các tế bào chũm (sào bào chũm).\n- Lồi cầu xương hàm dưới ở trước lỗ tai.\n- Góc Citelli bình thường là 1 góc nhọn.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-11-p081.jpg]]\n\n#### Giải phẫu X-quang và hình minh họa\n\nTế bào chũm Lỗ tai ngoài Xương chũm Khớp thái dương hàm Lồi cầu hàm dưới\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-11-p082.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-11-p079.jpg",
+      "images/xquang-so-xoang/so-xoang-11-p081.jpg",
+      "images/xquang-so-xoang/so-xoang-11-p082.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      79,
+      80,
+      81,
+      82,
+      83
+    ],
+    "references": [],
+    "id": "xr-so-xoang-11"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang xương mũi nghiêng",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang xương mũi nghiêng\n\n\n#### Tư thế và kỹ thuật chụp\n\nChỉ định: Tìm tổn thương gãy vỡ xương mũi do chấn thương.\n- Bệnh nhân nằm sấp hoặc đứng, nghiêng đầu bên tổn thương sát film.\n- Tay bên không chụp thả lỏng, tay còn lại tì nhẹ lên mặt bàn, 2 chân duỗi thẳng.\n- Chỉnh mặt phẳng MSP song song với film, trục nối 2 hốc mắt vuông góc với film.\n- Để đầu nghiêng hoàn toàn, có thể lót đệm dưới cằm bệnh nhân.\n- Tia trung tâm vuông góc với film, đi qua điểm giữa góc mũi – má.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-12-p088.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Kỹ thuật này có thể thực hiện ở cả tư thế đứng và tư thế nằm.\n- Khái niệm “Mũi nghiêng tia mềm”. MŨI NGHIÊNG TIA MỀM\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 55 – 60 |\n| mAs | 5.6 – 7.1 |\n| SID (cm) | 80 – 100 |\n| Grid | - |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\nThấy rõ xương chính mũi ở tư thế nghiêng Xoang trán Xương chính mũi\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-12-p090.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-12-p088.jpg",
+      "images/xquang-so-xoang/so-xoang-12-p090.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      87,
+      88,
+      89,
+      90,
+      91
+    ],
+    "references": [],
+    "id": "xr-so-xoang-12"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang khớp thái dương hàm",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang khớp thái dương hàm\n\n\n#### Kiến thức và hình ảnh liên quan\n\nHố thái dương hàm Ống tai ngoài Lồi cầu XHD Xương thái dương Sụn khớp\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-13-p092.jpg]]\n\n#### Kiến thức và hình ảnh liên quan\n\nKỹ thuật chụp: Schuller há miệng và ngậm miệng.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-13-p094.jpg]]\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-13-p095.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-13-p092.jpg",
+      "images/xquang-so-xoang/so-xoang-13-p094.jpg",
+      "images/xquang-so-xoang/so-xoang-13-p095.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      92,
+      93,
+      94,
+      95
+    ],
+    "references": [],
+    "id": "xr-so-xoang-13"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Nadeau (mỏm trâm)",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Nadeau (mỏm trâm)\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-14-p096.jpg]]\n\n#### Tư thế và kỹ thuật chụp\n\nChỉ định: Nghi ngờ quá phát mỏm trâm: nuốt đau, nuốt vướng, sờ hố Amidan thấy đầu mỏm trâm\n- Đặt film chếch 1 góc 13 – 15o so với mặt bàn.\n- Bệnh nhân nằm ngửa trên bàn chụp, chẩm gáy vào trung tâm film.\n- Chỉnh mặt phẳng MSP vuông góc với film, trục nối 2 lỗ tai song song với film.\n- Chỉnh đường AML vuông góc với film.\n- Tia trung tâm vuông góc với film, đi qua mặt phẳng chính diện, song song với sàn ống tai ngoài.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-14-p097.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Trước khi phát tia, chú ý cho bệnh nhân há miệng.\n- Kỹ thuật này có thể thực hiện ở tư thế nằm sấp.\n\n| Thông số | Giá trị |\n|---|---|\n| kV | mAs |\n| SID | Grid |\n| Film/Detector size | 70 – 75 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Tư thế nằm ngửa thấy được 2 mỏm trâm cân đối trên film và nằm trong hình xoang hàm.\n- Tư thế nằm sấp thấy được 2 mỏm trâm cân đối trên film và nằm trên hình xoang hàm.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-14-p099.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-14-p096.jpg",
+      "images/xquang-so-xoang/so-xoang-14-p097.jpg",
+      "images/xquang-so-xoang/so-xoang-14-p099.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      96,
+      97,
+      98,
+      99
+    ],
+    "references": [],
+    "id": "xr-so-xoang-14"
+  },
+  {
+    "title": "Kỹ thuật chụp X-quang Rhese (lỗ thị giác)",
+    "modality": "X-quang",
+    "category": "Kỹ thuật chụp",
+    "reviewed": true,
+    "content": "### Kỹ thuật chụp X-quang Rhese (lỗ thị giác)\n\n\n#### Kiến thức và hình ảnh liên quan\n\nXương trán Xương sàng Xương lệ Xương hàm trên Cánh lớn xương bướm Xương khẩu cái Xương gò má\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-15-p100.jpg]]\n\n#### Kiến thức và hình ảnh liên quan\n\nLỗ thị giác Khe ổ mắt trên Khe ổ mắt dưới\n\n\n#### Tư thế và kỹ thuật chụp\n\nChỉ định: Tìm tổn thương nghi phá hủy xương ống thi giác.\n- Bệnh nhân ngồi hoặc nằm sấp trên bàn, hốc mắt vào giữa film.\n- Chỉnh mặt phẳng MSP vuông góc với film, trục nối 2 lỗ tai song song với film.\n- Bệnh nhân hơi cúi mặt sao cho mặt phẳng AML vuông góc với film, đồng thời cằm, má, mũi sát film.\n- Nghiêng đầu bệnh nhân về bên chụp 1 góc khoảng 53o so với phương ngang.\n- Tia trung tâm vuông góc với film, tia đi ra hốc mắt bên chụp và tới film.\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-15-p102.jpg]]\n\n#### Thông số kỹ thuật tham khảo từ tài liệu\n\nMột số lưu ý:\n- Lỗ thị giác có hướng chếch ngoài 36 – 40o so với MSP và chếch lên 13 – 15o so với IOM, do đó chụp lỗ thị giác cần phải thật chính xác, dựng nhiều đô chếch khác nhau.\n- Thường chụp cả 2 bên để so sánh. RHESE\n\n| Thông số | Giá trị |\n|---|---|\n| kV | 65 – 70 |\n| mAs | 16 – 20 |\n| SID (cm) | 80 – 100 |\n| Grid | + |\n| Film Size (cm) | 24 x 30 |\n\n\n\n#### Tiêu chuẩn đánh giá hình ảnh\n\n- Lỗ thị giác không méo mó, bờ rõ, nằm ở ¼ dưới ngoài hốc mắt.\n- Đường kính lỗ thị giác khoảng 4 – 6mm.\n- Thấy rõ xoang trán, xoang sàng, xoang hàm. Xoang trán Thành bên hốc mắt Lỗ thị giác Xoang hàm Bờ dưới hốc mắt\n\n\n[[KTC_IMAGE:images/xquang-so-xoang/so-xoang-15-p104.jpg]]\n\n> **Lưu ý:** Các thông số kỹ thuật trong bài là giá trị tham khảo từ tài liệu gốc; cần đối chiếu với thiết bị và quy trình của cơ sở. Không tự ý vận động cổ khi nghi ngờ chấn thương cột sống cổ.",
+    "images": [
+      "images/xquang-so-xoang/so-xoang-15-p100.jpg",
+      "images/xquang-so-xoang/so-xoang-15-p102.jpg",
+      "images/xquang-so-xoang/so-xoang-15-p104.jpg"
+    ],
+    "source_document": "Kỹ thuật & Giải phẫu X-quang thông thường II – Sọ, xoang",
+    "source_pages": [
+      100,
+      101,
+      102,
+      103,
+      104
+    ],
+    "references": [],
+    "id": "xr-so-xoang-15"
   }
 ]
