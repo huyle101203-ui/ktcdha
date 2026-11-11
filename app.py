@@ -4167,7 +4167,21 @@ def render_ai_portal():
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]){background:#fff!important}
     [data-testid="stChatMessageAvatarUser"]{background:#d4eef3!important;border-radius:50%!important}
     [data-testid="stChatMessageAvatarAssistant"]{background:#007e96!important;border-radius:50%!important}
-    [data-testid="stChatMessage"] p{color:#193b48!important;line-height:1.65!important}
+    [data-testid="stChatMessage"] p{color:#193b48!important;line-height:1.7!important}
+    /* Repair cramped Streamlit disclosure labels inherited from site-wide styles. */
+    [data-testid="stCheckbox"] label,
+    [data-testid="stCheckbox"] label p {
+       font-family: Arial, "Helvetica Neue", sans-serif!important;
+       font-size: 0.96rem!important; line-height:1.5!important;
+       letter-spacing:normal!important; white-space:normal!important;
+       color:#174c5a!important; text-shadow:none!important;
+       transform:none!important; margin:0!important;
+    }
+    [data-testid="stCheckbox"] {min-height:42px!important; padding:6px 8px!important;
+       background:rgba(255,255,255,.55);border:1px solid #b7dce2;border-radius:10px;}
+    [data-testid="stCheckbox"] * {text-overflow:clip!important;}
+    [data-testid="stChatMessage"] h1,[data-testid="stChatMessage"] h2,
+    [data-testid="stChatMessage"] h3{color:#07576c!important;line-height:1.35!important;}
     @media(max-width:700px){.ktc-ai-banner{padding:20px 17px}.ktc-ai-banner h2{font-size:1.4rem!important}}
     </style>
     <div class="ktc-ai-banner"><div class="ktc-ai-kicker">KTCĐHA / TRỢ LÝ AI</div>
@@ -4190,8 +4204,8 @@ def render_ai_portal():
                  "Hãy sửa OPENAI_MODEL trong Secrets.")
         return
     st.caption(f"Chế độ thử nghiệm tiết kiệm · Model: `{model}` · "
-               "Trả lời chi tiết · tìm hình minh họa từ Wikimedia Commons.")
-    with st.expander("Chi phí và bảo mật API", expanded=False):
+               "Trả lời chuyên sâu · tìm hình minh họa từ Wikimedia Commons.")
+    if st.checkbox("Xem thông tin chi phí và bảo mật API", value=False, key="ktc_cost_toggle"):
         st.markdown("API OpenAI **có tính phí theo token**, kể cả khi dùng để thử. "
                     "Bảng giá chính thức: [OpenAI API Pricing](https://openai.com/api/pricing/). "
                     "Số token sử dụng được hiển thị sau mỗi câu trả lời; "
@@ -4201,6 +4215,8 @@ def render_ai_portal():
                    "Giới hạn ngân sách có thể không chặn ngay lập tức mọi yêu cầu.")
         st.caption("Không công khai OPENAI_API_KEY trên GitHub hoặc trong ảnh chụp.")
 
+    st.caption("Lưu ý: API vẫn tính phí theo token dù số dư chưa cập nhật. "
+               "Trả lời dài hơn sẽ dùng nhiều token hơn; hãy theo dõi Usage/Billing.")
     if "ktc_openai_history" not in st.session_state:
         st.session_state.ktc_openai_history = []
     if "ktc_openai_usage" not in st.session_state:
@@ -4219,7 +4235,7 @@ def render_ai_portal():
             if msg.get("usage"):
                 u = msg["usage"]
                 st.caption(f"Token: đầu vào {u['prompt']:,} · đầu ra {u['completion']:,}")
-    with st.expander("🖼️ Tìm hình minh họa từ Wikimedia Commons", expanded=False):
+    if st.checkbox("Hiển thị công cụ tìm hình minh họa", value=False, key="ktc_images_toggle"):
         st.caption("Ảnh nguồn mở, có thể không khớp hoàn toàn với câu hỏi. "
                    "Chỉ dùng tham khảo, không dùng để chẩn đoán. "
                    "Kiểm tra giấy phép ở trang nguồn trước khi tái sử dụng.")
@@ -4279,15 +4295,23 @@ def render_ai_portal():
         "Không bịa nguồn, protocol, thông số, liều thuốc hay chỉ dẫn cấp cứu. "
         "Không khẳng định đã truy cập MRI Master, vnrad.tech hoặc văn bản Bộ Y tế "
         "khi không có công cụ duyệt web. Nêu giới hạn khi chưa xác minh. "
-        "Trả lời chi tiết với các đề mục: nguyên lý, cách thực hiện, tiêu chuẩn đánh giá, "
-        "lưu ý an toàn khi phù hợp. Không tự khẳng định có hình ảnh nếu chưa đính kèm. "
+         "Trả lời đầy đủ và chuyên sâu nhưng chỉ trình bày điều có cơ sở. Với câu hỏi kỹ thuật, "
+        "tùy chủ đề hãy trình bày: mục đích/chỉ định, giải phẫu liên quan, chuẩn bị, "
+        "tư thế hoặc thiết lập chuỗi xung, định tâm và hướng tia, thông số kỹ thuật "
+        "chỉ khi có căn cứ, tiêu chuẩn đánh giá hình ảnh, lỗi thường gặp, an toàn, "
+        "ưu nhược điểm và các điểm cần nhớ. Không ép mọi đề mục vào mọi câu hỏi. "
+        "Giải thích thuật ngữ tiếng Anh khi hữu ích. Phân biệt kiến thức phổ quát với "
+        "quy trình tùy thiết bị và cơ sở. Với kỹ thuật hiếm, nhiều biến thể hoặc "
+        "không chắc chắn, nêu rõ điều chưa xác minh thay vì đưa ra góc chiếu/liều cụ thể. "
+        "Nếu người dùng hỏi về hình ảnh, gợi ý từ khóa tìm ảnh tiếng Anh phù hợp; "
+        "không tự khẳng định có hình ảnh nếu chưa đính kèm. "
         "Không thay thế bác sĩ và quy trình bệnh viện. Không yêu cầu dữ liệu định danh bệnh nhân."
     )
     messages = [{"role":"system", "content":instruction}]
-    for item in history[-8:]:
-        messages.append({"role":item["role"], "content":item["text"][:1800]})
+    for item in history[-10:]:
+        messages.append({"role":item["role"], "content":item["text"][:2400]})
     messages.append({"role":"user", "content":question})
-    payload = {"model":model, "messages":messages, "temperature":0.25, "max_tokens":1800}
+    payload = {"model":model, "messages":messages, "temperature":0.25, "max_tokens":3200}
     req = urllib.request.Request(
         "https://api.openai.com/v1/chat/completions",
         data=_json.dumps(payload, ensure_ascii=False).encode("utf-8"),
@@ -4300,7 +4324,7 @@ def render_ai_portal():
         with st.spinner("KTCĐHA AI đang trả lời..."):
             # Count attempts before sending; do not automatically retry billable requests.
             try:
-                with urllib.request.urlopen(req, timeout=45) as response:
+                with urllib.request.urlopen(req, timeout=90) as response:
                     data = _json.load(response)
                 answer = data["choices"][0]["message"]["content"]
                 if not isinstance(answer, str) or not answer.strip():
