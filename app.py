@@ -576,10 +576,10 @@ def internal_log_page():
       </section>
       <h2>Báo cáo giao ban {e(date_text)}</h2>
       <div class="summary">
-        <p>– XQ: .......... ca</p>
+        <p>– XQ: Σ .......... <span class="side">NHŨ ẢNH 2D: .......... ·NHŨ ẢNH 3D: ..........</span></p>
         <p>– CT: .......... ca</p>
         <p>– MRI: .......... ca</p>
-        <p>– Siêu âm: Σ .......... <span class="side">SACC: .......... · SUP: ..........</span></p>
+        <p>– Siêu âm: Σ .......... <span class="side">SACC: .......... · SA4D: ..........</span></p>
       </div>
     </div>"""
     a4_style = """
