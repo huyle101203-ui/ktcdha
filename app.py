@@ -571,7 +571,7 @@ def internal_log_page():
       <section>
         <p><strong>* Phim 20×25:</strong> {n(f20_boxes)} hộp / {n(f20_covers)} vỏ
           <b class="sum">Σ {n(total20)}</b></p>
-        <p>– Phòng A107: {n(f20_room)} phim <span class="side">Sử dụng: {n(used20)} phim</span></p>
+        <p>– Phòng A107: {n(a107)} phim <span class="side">Sử dụng: {n(used20)} phim</span></p>
         <p class="hint">Phim trên hệ thống: {n(remaining20)}</p>
       </section>
       <h2>Báo cáo giao ban {e(date_text)}</h2>
