@@ -4159,6 +4159,19 @@ def render_ai_portal():
     .ktc-ai-banner h2{color:#fff!important;margin:4px 0 8px!important;font-size:1.75rem!important}
     .ktc-ai-banner p{color:#e3f8f9!important;margin:0!important;font-size:.89rem}
     .ktc-ai-kicker{color:#d4f5f6;font-size:.71rem;font-weight:800;letter-spacing:.13em}
+    /* Chat avatars and readable chat bubbles on desktop and mobile */
+    [data-testid="stChatMessage"] {border-radius:16px!important;padding:14px 16px!important;
+        margin:9px 0!important;border:1px solid rgba(0,125,148,.12)!important}
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+        background:#e5f5f8!important}
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+        background:#fff!important}
+    [data-testid="stChatMessageAvatarUser"] {background:#d4eef3!important;border-radius:50%!important}
+    [data-testid="stChatMessageAvatarAssistant"] {background:#007e96!important;border-radius:50%!important}
+    [data-testid="stChatMessage"] p {color:#193b48!important;line-height:1.65!important}
+    [data-testid="stExpander"] {border-radius:12px!important;border:1px solid #c5e3e9!important}
+    [data-testid="stExpander"] summary {font-weight:600!important;color:#245e6e!important}
+    @media(max-width:700px){[data-testid="stChatMessage"]{padding:11px!important}}
     @media(max-width:700px){.ktc-ai-banner{padding:20px 17px}.ktc-ai-banner h2{font-size:1.4rem!important}}
     </style>
     <div class="ktc-ai-banner"><div class="ktc-ai-kicker">KTCĐHA / TRỢ LÝ AI</div>
@@ -4188,7 +4201,7 @@ def render_ai_portal():
         return
 
     # Kiểm tra cấu hình bằng API models; không ghi log hoặc hiển thị khóa bí mật.
-    with st.expander("🔧 Kiểm tra kết nối Gemini (quản trị viên)"):
+    with st.expander("⚙️ Công cụ kiểm tra kết nối · Chỉ dành cho quản trị viên", expanded=False):
         st.caption("Kiểm tra quyền truy cập và các model hỗ trợ generateContent. "
                    "Không hiển thị API key.")
         if st.button("KIỂM TRA KẾT NỐI AI", key="ktc-ai-diagnostic"):
@@ -4244,7 +4257,8 @@ def render_ai_portal():
                     "thông số CT, tiêu chuẩn chất lượng ảnh X-quang và an toàn chẩn đoán hình ảnh.")
 
     for msg in history:
-        with st.chat_message("user" if msg["role"] == "user" else "assistant"):
+        with st.chat_message("user" if msg["role"] == "user" else "assistant",
+                             avatar="👤" if msg["role"] == "user" else "🩻"):
             st.markdown(msg["text"])
 
     question = st.chat_input("Nhập câu hỏi X-quang, CT, MRI...", key="ktc-ai-input",
@@ -4285,9 +4299,9 @@ def render_ai_portal():
         "contents": contents,
         "generationConfig": {"temperature": 0.25, "maxOutputTokens": 1600},
     }
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="👤"):
         st.markdown(question)
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="🩻"):
         with st.spinner("KTCĐHA AI đang trả lời..."):
             try:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
@@ -4297,8 +4311,22 @@ def render_ai_portal():
                     headers={"Content-Type": "application/json", "x-goog-api-key": str(api_key)},
                     method="POST",
                 )
-                with urllib.request.urlopen(req, timeout=35) as response:
-                    data = _json.load(response)
+                # HTTP 503/temporary 502/504: retry briefly with bounded backoff.
+                # No automatic switch to another model (may incur charges).
+                data = None
+                for attempt in range(3):
+                    try:
+                        with urllib.request.urlopen(req, timeout=35) as response:
+                            data = _json.load(response)
+                        break
+                    except urllib.error.HTTPError as transient:
+                        if transient.code not in (502, 503, 504) or attempt == 2:
+                            raise
+                        time.sleep((1.5, 3.0)[attempt])
+                    except (urllib.error.URLError, TimeoutError):
+                        if attempt == 2:
+                            raise
+                        time.sleep((1.5, 3.0)[attempt])
                 candidates = data.get("candidates", [])
                 parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
                 answer = "\\n".join(p.get("text", "") for p in parts if isinstance(p, dict)).strip()
@@ -4312,7 +4340,10 @@ def render_ai_portal():
                 st.session_state.ktc_ai_calls += 1
             except urllib.error.HTTPError as err:
                 detail = _ktc_gemini_error_detail(err)
-                if err.code == 429:
+                if err.code == 503:
+                    st.warning("Gemini đang quá tải (HTTP 503). KTCĐHA đã thử kết nối lại 3 lần "
+                               "nhưng Google chưa xử lý được. Vui lòng thử lại sau ít phút.")
+                elif err.code == 429:
                     st.warning(f"Gemini đang giới hạn lượt sử dụng (HTTP 429): {detail}")
                 elif err.code in (400, 404):
                     st.error(f"Gemini từ chối yêu cầu (HTTP {err.code}): {detail}")
@@ -4322,7 +4353,7 @@ def render_ai_portal():
                 else:
                     st.error(f"Lỗi Gemini HTTP {err.code}: {detail}")
             except (urllib.error.URLError, TimeoutError):
-                st.error("Kết nối đến Gemini bị gián đoạn hoặc quá thời gian chờ.")
+                st.error("Kết nối Gemini gián đoạn. Đã tự thử lại tối đa 3 lần; vui lòng thử sau.")
             except (ValueError, KeyError, IndexError):
                 st.error("Không đọc được phản hồi từ Gemini. Vui lòng thử lại.")
 
