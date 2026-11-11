@@ -361,13 +361,50 @@ st.markdown("""
 [data-testid="stPopover"] button{border-radius:12px!important;font-weight:800!important}
 </style>
 """, unsafe_allow_html=True)
-menu_col, spacer_col = st.columns([1.7, 5.3], vertical_alignment="center")
+# Menu thả xuống bằng nút Streamlit thông thường: tránh lỗi icon của popover.
+if "utility_menu_open" not in st.session_state:
+    st.session_state.utility_menu_open = False
+
+st.markdown("""
+<style>
+/* Nút menu teal, nổi bật trên nền sáng */
+div.st-key-utility_menu_toggle button {
+  background:linear-gradient(115deg,#006d85,#0999a9)!important;
+  color:#fff!important;
+  border:1px solid #0b8197!important;
+  border-radius:13px!important;
+  min-height:46px!important;
+  padding:0 21px!important;
+  font-weight:800!important;
+  letter-spacing:.06em!important;
+  box-shadow:0 8px 19px rgba(0,103,125,.20)!important;
+}
+div.st-key-utility_menu_toggle button:hover {
+  background:linear-gradient(115deg,#00586f,#00879e)!important;
+  border-color:#00586f!important;
+  transform:translateY(-1px);
+}
+div.st-key-utility_menu_toggle button p {color:white!important}
+div.st-key-utility-menu-panel {
+  background:#e6f6f8;border:1px solid #9fd7df;border-radius:16px;
+  padding:15px;box-shadow:0 12px 28px #006c841a
+}
+</style>
+""", unsafe_allow_html=True)
+menu_col, spacer_col = st.columns([1.55, 5.45], vertical_alignment="center")
 with menu_col:
-    with st.popover("☰  MENU", use_container_width=True):
-        st.markdown("**TIỆN ÍCH & TÀI LIỆU**")
-        for name, description in EXTRA_TOOLS:
-            if st.button(name + "  →", key="utility-open-" + name, use_container_width=True):
-                open_utility(name)
+    if st.button("☰  MENU", key="utility_menu_toggle", use_container_width=True):
+        st.session_state.utility_menu_open = not st.session_state.utility_menu_open
+        st.rerun()
+if st.session_state.utility_menu_open:
+    panel, remainder = st.columns([2.8, 4.2], gap="small")
+    with panel:
+        with st.container(key="utility-menu-panel", border=True):
+            st.markdown("**TIỆN ÍCH & TÀI LIỆU**")
+            for name, description in EXTRA_TOOLS:
+                if st.button(name + "  →", key="utility-open-" + name, use_container_width=True):
+                    st.session_state.utility_menu_open = False
+                    open_utility(name)
 st.markdown('<div class="site-head"><div class="brand"><div class="brandmark">✚</div><div><div class="brandtitle">KTCĐHA</div><div class="brandsub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div><div class="headright">BY HUUHUY</div></div>', unsafe_allow_html=True)
 if st.session_state.utility_page is not None:
     selected = st.session_state.utility_page
