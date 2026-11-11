@@ -6,7 +6,8 @@ import streamlit as st
 st.set_page_config(page_title="KTCĐHA | By HUUHUY", page_icon="🩻", layout="wide")
 
 BASE = Path(__file__).parent
-ARTICLES = json.loads((BASE / "data" / "articles.json").read_text(encoding="utf-8"))
+
+ARTICLES = json.loads((BASE / "articles.json").read_text(encoding="utf-8"))
 MODALITIES = ["Tất cả", "MRI", "CT", "X-quang"]
 
 st.markdown("""
