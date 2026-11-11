@@ -3293,7 +3293,7 @@ ARTICLES = load_articles()
 def render_ktc_article(article):
     """Render reviewed article text and local figures from the images folder."""
     content = article.get("content", "")
-    chunks = re.split(r"(\\[\\[KTC_IMAGE:[^\\]]+\\]\\])", content)
+    chunks = re.split(r"(\[\[KTC_IMAGE:[^\]]+\]\])", content)
     for chunk in chunks:
         if chunk.startswith("[[KTC_IMAGE:") and chunk.endswith("]]"):
             rel = chunk[len("[[KTC_IMAGE:"):-2].strip()
@@ -4590,7 +4590,7 @@ else:
         st.info("Chưa có bài học thuộc mục này. Có thể bổ sung nội dung sau.")
     for a in items:
         with st.expander(a.get("title","Bài học")):
-            st.markdown(a.get("content",""))
+            render_ktc_article(a)
             for ref in a.get("references",[]):
                 if isinstance(ref,str) and ref.startswith(("http://","https://")):
                     st.markdown(f"Nguồn: {ref}")
