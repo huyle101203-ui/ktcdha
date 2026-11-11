@@ -343,8 +343,7 @@ def xray_library():
 EXTRA_TOOLS = [
     ("Hỏi AI", "Trợ lý tra cứu tài liệu"),
     ("Tính độ lọc cầu thận eGFR", "Công cụ tính eGFR"),
-    ("Tính lượng thuốc", "Hỗ trợ tính liều/lượng thuốc"),
-    ("Tốc độ tiêm", "Công cụ tính tốc độ tiêm"),
+    ("Tính lượng thuốc & tốc độ tiêm", "Công cụ tính lượng thuốc và tốc độ tiêm"),
     ("Xử lý sốc phản vệ", "Tài liệu xử trí cấp cứu"),
     ("Tài liệu chuyên ngành", "Kho tài liệu tham khảo"),
     ("Sổ trực nội bộ", "Biểu mẫu giao ban phim và thuốc"),
@@ -423,6 +422,92 @@ with st.container(key="floating_utility_menu"):
                     st.session_state.utility_menu_open = False
                     open_utility(name)
 st.markdown('<div class="site-head"><div class="brand"><div class="brandmark">✚</div><div><div class="brandtitle">KTCĐHA</div><div class="brandsub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div><div class="headright">BY HUUHUY</div></div>', unsafe_allow_html=True)
+# Cải thiện hiển thị trên điện thoại, kể cả khi trình duyệt dùng chế độ tối.
+# Giữ nền sáng và độ tương phản cao cho nhãn, ô nhập, lịch và nút.
+st.markdown("""
+<style>
+@media (max-width: 700px) {
+  /* Dành khoảng trống cho nút MENU cố định, không che ngày trực hay nút Khóa sổ. */
+  .block-container {
+    padding-top: 5.6rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+  }
+  .st-key-floating_utility_menu {
+    top: 12px !important;
+    left: 12px !important;
+    width: min(210px, calc(100vw - 24px)) !important;
+    z-index: 1001 !important;
+  }
+  .st-key-floating_utility_menu .st-key-utility_menu_toggle button {
+    width: 118px !important;
+    min-height: 45px !important;
+    font-size: .85rem !important;
+    white-space: nowrap !important;
+  }
+  .shift-heading {
+    padding: 18px 19px !important;
+    margin-top: 8px !important;
+  }
+  .shift-heading h2 {font-size: 1.35rem !important}
+  .shift-subhead {font-size: 1.02rem !important; margin-top: 20px !important}
+  [data-testid="stHorizontalBlock"] {gap: .65rem !important}
+  [data-testid="stVerticalBlock"] {gap: .7rem}
+}
+/* Streamlit trên Safari iPhone có thể tự bật dark mode và làm nhãn gần như trắng. */
+[data-testid="stAppViewContainer"] {
+  color-scheme: light !important;
+  color: #173d4b !important;
+}
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] p,
+[data-testid="stNumberInput"] label,
+[data-testid="stNumberInput"] label p,
+[data-testid="stTextInput"] label,
+[data-testid="stTextInput"] label p,
+[data-testid="stDateInput"] label,
+[data-testid="stDateInput"] label p,
+[data-testid="stAppViewContainer"] .stCaption p {
+  color: #244b58 !important;
+  opacity: 1 !important;
+  font-weight: 650 !important;
+}
+[data-testid="stNumberInput"] input,
+[data-testid="stTextInput"] input,
+[data-testid="stDateInput"] input {
+  background: #ffffff !important;
+  color: #183f4c !important;
+  -webkit-text-fill-color: #183f4c !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  min-height: 46px !important;
+  color-scheme: light !important;
+}
+[data-testid="stNumberInput"] [data-baseweb="input"],
+[data-testid="stTextInput"] [data-baseweb="input"],
+[data-testid="stDateInput"] [data-baseweb="input"] {
+  background: #ffffff !important;
+  border: 1px solid #9fcbd2 !important;
+  border-radius: 11px !important;
+}
+[data-testid="stNumberInput"] button {
+  background: #e5f4f6 !important;
+  color: #006b82 !important;
+  border-color: #b6dfe4 !important;
+}
+[data-testid="stNumberInput"] button svg {
+  fill: #006b82 !important;
+  stroke: #006b82 !important;
+}
+[data-testid="stDateInput"] svg {color: #006b82 !important}
+[data-testid="stAppViewContainer"] input::placeholder {
+  color: #6d8a94 !important;
+  -webkit-text-fill-color: #6d8a94 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 def internal_log_page():
     """Local-session shift report; protected by configured secret; never server-persist PHI."""
     st.markdown("""
@@ -576,10 +661,10 @@ def internal_log_page():
       </section>
       <h2>Báo cáo giao ban {e(date_text)}</h2>
       <div class="summary">
-        <p>– XQ: Σ .......... <span class="side">NHŨ ẢNH 2D: .......... ·NHŨ ẢNH 3D: ..........</span></p>
+        <p>– XQ: .......... ca</p>
         <p>– CT: .......... ca</p>
         <p>– MRI: .......... ca</p>
-        <p>– Siêu âm: Σ .......... <span class="side">SACC: .......... · SA4D: ..........</span></p>
+        <p>– Siêu âm: Σ .......... <span class="side">SACC: .......... · SUP: ..........</span></p>
       </div>
     </div>"""
     a4_style = """
