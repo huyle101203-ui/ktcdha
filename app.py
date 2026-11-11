@@ -552,6 +552,88 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+def egfr_ckdepi_2021(scr_mg_dl, age, sex):
+    """2021 CKD-EPI creatinine equation, adults, race-free."""
+    kappa, alpha, female_factor = (0.7, -0.241, 1.012) if sex == "Nữ" else (0.9, -0.302, 1.0)
+    ratio = scr_mg_dl / kappa
+    return 142 * min(ratio, 1.0)**alpha * max(ratio, 1.0)**(-1.2) * 0.9938**age * female_factor
+
+
+def egfr_category(value):
+    if value >= 90:
+        return "G1", "Bình thường hoặc cao", "Không thể kết luận bệnh thận mạn chỉ từ eGFR. G1 chỉ là phân loại GFR."
+    if value >= 60:
+        return "G2", "Giảm nhẹ", "G2 đơn độc không đủ để chẩn đoán bệnh thận mạn."
+    if value >= 45:
+        return "G3a", "Giảm nhẹ đến trung bình", "Nếu kéo dài ít nhất 3 tháng, phù hợp tiêu chí giảm GFR của bệnh thận mạn."
+    if value >= 30:
+        return "G3b", "Giảm trung bình đến nặng", "Cần đánh giá chuyên khoa và đối chiếu xét nghiệm."
+    if value >= 15:
+        return "G4", "Giảm nặng", "Cần được bác sĩ đánh giá sớm."
+    return "G5", "Suy giảm chức năng thận rất nặng", "Cần đánh giá chuyên khoa khẩn trương theo tình trạng lâm sàng."
+
+
+def render_egfr_tool():
+    st.markdown("""
+    <style>
+    .egfr-panel{border:1px solid #a5dce3;background:linear-gradient(120deg,#e5f6f7,#f6fcfd);
+      border-radius:18px;padding:18px 22px;margin:10px 0 22px}
+    .egfr-panel h3{margin:0 0 6px;color:#006d85}
+    .egfr-panel p{margin:0;color:#365a65;font-size:.91rem}
+    .egfr-result{border:1px solid #a5dce3;background:#e5f6f7;border-radius:16px;
+      padding:20px;margin:12px 0;color:#164353}
+    .egfr-result strong{font-size:2rem;color:#007e96}
+    </style>""",unsafe_allow_html=True)
+    st.markdown('<div class="egfr-panel"><h3>Tính độ lọc cầu thận ước tính – CKD-EPI 2021</h3>'
+                '<p>Công thức dựa trên creatinin huyết thanh, áp dụng cho người từ 18 tuổi trở lên; '
+                'không sử dụng hệ số chủng tộc.</p></div>',unsafe_allow_html=True)
+    with st.form("egfr-form"):
+        col1,col2 = st.columns(2)
+        with col1:
+            age = st.number_input("Tuổi (năm)",min_value=18,max_value=120,value=40,step=1)
+            sex = st.selectbox("Giới tính sử dụng trong công thức",["Nam","Nữ"])
+        with col2:
+            unit = st.selectbox("Đơn vị creatinin",["µmol/L","mg/dL"])
+            creatinine = st.number_input(
+                "Creatinin huyết thanh",min_value=0.01,max_value=3000.0,
+                value=80.0 if unit=="µmol/L" else 0.90,
+                step=1.0 if unit=="µmol/L" else 0.01,format="%.2f"
+            )
+        submitted = st.form_submit_button("TÍNH eGFR VÀ PHÂN LOẠI",use_container_width=True)
+    if submitted:
+        scr = creatinine / 88.4 if unit=="µmol/L" else creatinine
+        if scr <= 0:
+            st.error("Creatinin phải lớn hơn 0.")
+            return
+        result = egfr_ckdepi_2021(scr,age,sex)
+        category, description, explanation = egfr_category(result)
+        st.markdown(
+            f'<div class="egfr-result"><div>eGFR (CKD-EPI 2021)</div>'
+            f'<strong>{result:.1f}</strong> mL/phút/1,73 m²'
+            f'<p><b>Mức {category} – {description}</b></p>'
+            f'<p>{explanation}</p></div>',unsafe_allow_html=True)
+        if category in ("G1","G2"):
+            st.info("eGFR ≥ 60 không đủ để chẩn đoán bệnh thận mạn nếu không có dấu hiệu tổn thương thận kéo dài ≥ 3 tháng (ví dụ albumin niệu).")
+        else:
+            st.warning("Kết quả này không tự xác định bệnh thận mạn nếu chưa xác nhận tình trạng kéo dài ≥ 3 tháng. Nếu mới xuất hiện, cần loại trừ tổn thương thận cấp.")
+    st.markdown("**Các mức phân loại GFR**")
+    st.table([
+        {"Mức":"G1","eGFR (mL/phút/1,73 m²)":"≥ 90","Diễn giải":"Bình thường hoặc cao"},
+        {"Mức":"G2","eGFR (mL/phút/1,73 m²)":"60–89","Diễn giải":"Giảm nhẹ"},
+        {"Mức":"G3a","eGFR (mL/phút/1,73 m²)":"45–59","Diễn giải":"Giảm nhẹ đến trung bình"},
+        {"Mức":"G3b","eGFR (mL/phút/1,73 m²)":"30–44","Diễn giải":"Giảm trung bình đến nặng"},
+        {"Mức":"G4","eGFR (mL/phút/1,73 m²)":"15–29","Diễn giải":"Giảm nặng"},
+        {"Mức":"G5","eGFR (mL/phút/1,73 m²)":"< 15","Diễn giải":"Suy giảm rất nặng"},
+    ])
+    st.caption("Công thức: eGFR = 142 × min(Scr/κ,1)^α × max(Scr/κ,1)^−1,200 × 0,9938^tuổi × (1,012 nếu nữ). "
+               "Nam: κ=0,9; α=−0,302. Nữ: κ=0,7; α=−0,241. Scr tính bằng mg/dL.")
+    st.caption("Nguồn công thức: Inker LA và cộng sự, NEJM 2021 (CKD-EPI 2021); "
+               "phân loại GFR: KDIGO 2024. Trang tham khảo do bạn cung cấp: "
+               "https://daithaoduong.com/tinh-do-loc-cau-than-theo-ckd-epi-2021/")
+    st.warning("Chỉ hỗ trợ tham khảo, không dùng eGFR đơn lẻ để quyết định liều thuốc cản quang "
+               "hoặc chẩn đoán suy thận. eGFR từ creatinin có thể không chính xác khi creatinin chưa ổn định, "
+               "mang thai hoặc có thay đổi lớn về khối cơ.")
+
 def internal_log_page():
     """Local-session shift report; protected by configured secret; never server-persist PHI."""
     st.markdown("""
@@ -785,7 +867,9 @@ if st.session_state.utility_page is not None:
                 f'<h2>{html.escape(selected)}</h2>'
                 f'<p>{html.escape(dict(EXTRA_TOOLS).get(selected, ""))}</p></div>',
                 unsafe_allow_html=True)
-    if selected == "Sổ trực nội bộ":
+    if selected == "Tính độ lọc cầu thận eGFR":
+        render_egfr_tool()
+    elif selected == "Sổ trực nội bộ":
         internal_log_page()
     elif selected == "Hỏi AI":
         st.info("Chức năng Hỏi AI đang được chuẩn bị. Chưa kết nối kho tài liệu đã kiểm duyệt.")
