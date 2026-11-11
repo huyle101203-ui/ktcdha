@@ -1,5 +1,7 @@
 import json
 import html
+from datetime import datetime, date
+from zoneinfo import ZoneInfo
 from pathlib import Path
 import streamlit as st
 
@@ -345,6 +347,7 @@ EXTRA_TOOLS = [
     ("Tốc độ tiêm", "Công cụ tính tốc độ tiêm"),
     ("Xử lý sốc phản vệ", "Tài liệu xử trí cấp cứu"),
     ("Tài liệu chuyên ngành", "Kho tài liệu tham khảo"),
+    ("Sổ trực nội bộ", "Biểu mẫu giao ban phim và thuốc"),
 ]
 if "utility_page" not in st.session_state:
     st.session_state.utility_page = None
@@ -420,6 +423,132 @@ with st.container(key="floating_utility_menu"):
                     st.session_state.utility_menu_open = False
                     open_utility(name)
 st.markdown('<div class="site-head"><div class="brand"><div class="brandmark">✚</div><div><div class="brandtitle">KTCĐHA</div><div class="brandsub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div><div class="headright">BY HUUHUY</div></div>', unsafe_allow_html=True)
+def internal_log_page():
+    """Local-session shift report; protected by configured secret; never server-persist PHI."""
+    st.markdown("""
+    <style>
+    .shift-heading{background:linear-gradient(115deg,#006c84,#1197a8);color:#fff;
+       border-radius:19px;padding:22px 27px;margin:13px 0 19px}
+    .shift-heading h2{color:white!important;margin:0 0 8px!important;font-size:1.6rem!important}
+    .shift-heading p{color:#dff8fa!important;margin:0;font-size:.82rem}
+    .shift-subhead{font-size:1.08rem;font-weight:800;color:#006f87;
+       border-bottom:2px solid #b9e1e5;padding:12px 0 8px;margin:18px 0 10px}
+    .shift-total{border-radius:14px;background:#e1f5f7;border:1px solid #9fd8df;
+       padding:15px 18px;margin:10px 0;color:#00677e;font-weight:800}
+    </style>""", unsafe_allow_html=True)
+    st.markdown('<div class="shift-heading"><h2>SỔ TRỰC NỘI BỘ</h2>'
+                '<p>Ghi nhận bàn giao phim, thuốc và số lượng ca trong ca trực</p></div>',
+                unsafe_allow_html=True)
+
+    password = st.secrets.get("INTERNAL_LOG_PASSWORD", None)
+    if not password:
+        st.error("Chưa cấu hình mật khẩu cho Sổ trực nội bộ. "
+                 "Thêm INTERNAL_LOG_PASSWORD vào Streamlit Secrets trước khi sử dụng.")
+        st.caption("Không nhập dữ liệu bệnh nhân vào website công khai khi chưa có kiểm soát truy cập và lưu trữ phù hợp.")
+        return
+    if not st.session_state.get("shift_authenticated", False):
+        with st.form("shift-login"):
+            entered = st.text_input("Mật khẩu truy cập sổ trực", type="password")
+            submitted = st.form_submit_button("MỞ SỔ TRỰC", use_container_width=True)
+        if submitted:
+            import hmac
+            if hmac.compare_digest(entered, str(password)):
+                st.session_state.shift_authenticated = True
+                st.rerun()
+            else:
+                st.error("Mật khẩu không đúng.")
+        return
+    if st.button("Khóa sổ trực", key="shift-lock"):
+        st.session_state.shift_authenticated = False
+        st.rerun()
+
+    today = datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")).date()
+    work_day = st.date_input("Ngày trực", value=today, format="DD/MM/YYYY", key="shift-day")
+    st.markdown('<div class="shift-subhead">1. Bàn giao vật tư</div>', unsafe_allow_html=True)
+    c1,c2 = st.columns(2)
+    with c1:
+        change_2530 = st.number_input("Thay hộp phim 25×30 (hộp)",min_value=0,step=1,key="shift-change-2530")
+        gado_receive = st.number_input("Nhận Gadovist (hộp)",min_value=0,step=1,key="shift-receive-gado")
+        gado_patient = st.text_input("Tên bệnh nhân nhận Gadovist",key="shift-gado-patient")
+    with c2:
+        change_3543 = st.number_input("Thay hộp phim 35×43 (hộp)",min_value=0,step=1,key="shift-change-3543")
+        omni_receive = st.number_input("Nhận Omnipaque (lọ)",min_value=0,step=1,key="shift-receive-omni")
+        omni_patient = st.text_input("Tên bệnh nhân nhận Omnipaque",key="shift-omni-patient")
+
+    st.markdown('<div class="shift-subhead">2. Thuốc</div>', unsafe_allow_html=True)
+    c1,c2 = st.columns(2)
+    with c1:
+        gado_stock = st.number_input("Gadovist – hộp",min_value=0,step=1,key="shift-gado-stock")
+        gado_empty = st.number_input("Gadovist – vỏ",min_value=0,step=1,key="shift-gado-empty")
+    with c2:
+        omni_stock = st.number_input("Omnipaque – lọ",min_value=0,step=1,key="shift-omni-stock")
+        omni_empty = st.number_input("Omnipaque – vỏ",min_value=0,step=1,key="shift-omni-empty")
+
+    st.markdown('<div class="shift-subhead">3. Phim 35×43</div>', unsafe_allow_html=True)
+    a,b,c = st.columns(3)
+    with a: f35_boxes = st.number_input("Số hộp 35×43",min_value=0,step=1,key="shift-f35-boxes")
+    with b: f35_covers = st.number_input("Số vỏ 35×43",min_value=0,step=1,key="shift-f35-covers")
+    with c: f35_loose = st.number_input("Phim lẻ 35×43",min_value=0,step=1,key="shift-f35-loose")
+    total35 = f35_boxes*125 + f35_loose
+    st.markdown(f'<div class="shift-total">Σ Phim 35×43 = {f35_boxes} × 125 + {f35_loose} = {total35:,} phim</div>',unsafe_allow_html=True)
+    a,b = st.columns(2)
+    with a:
+        ct_cases = st.number_input("CT – số ca",min_value=0,step=1,key="shift-ct-cases")
+        ct_films = st.number_input("CT – số phim",min_value=0,step=1,key="shift-ct-films")
+    with b:
+        mri_cases = st.number_input("MRI – số ca",min_value=0,step=1,key="shift-mri-cases")
+        mri_films = st.number_input("MRI – số phim",min_value=0,step=1,key="shift-mri-films")
+
+    st.markdown('<div class="shift-subhead">4. Phim 25×30</div>', unsafe_allow_html=True)
+    a,b,c = st.columns(3)
+    with a: f25_boxes = st.number_input("Số hộp 25×30",min_value=0,step=1,key="shift-f25-boxes")
+    with b: f25_covers = st.number_input("Số vỏ 25×30",min_value=0,step=1,key="shift-f25-covers")
+    with c: a107 = st.number_input("Phòng A107 – số phim",min_value=0,step=1,key="shift-a107")
+    total25 = f25_boxes*125 + a107
+    st.markdown(f'<div class="shift-total">Σ Phim 25×30 = {f25_boxes} × 125 + {a107} = {total25:,} phim</div>',unsafe_allow_html=True)
+    remaining25 = st.number_input("Phim 25×30 tồn trên hệ thống",min_value=0,step=1,key="shift-f25-remaining")
+    used25 = total25 - remaining25
+    st.metric("Sử dụng phim 25×30",f"{used25:,} phim")
+    if used25 < 0: st.warning("Số phim tồn trên hệ thống lớn hơn tổng phim tính được. Vui lòng kiểm tra số liệu.")
+
+    st.markdown('<div class="shift-subhead">5. Phim 20×25</div>', unsafe_allow_html=True)
+    a,b,c = st.columns(3)
+    with a: f20_boxes = st.number_input("Số hộp 20×25",min_value=0,step=1,key="shift-f20-boxes")
+    with b: f20_covers = st.number_input("Số vỏ 20×25",min_value=0,step=1,key="shift-f20-covers")
+    with c: f20_room = st.number_input("Phim lẻ / phòng 20×25",min_value=0,step=1,key="shift-f20-room")
+    total20 = f20_boxes*125 + f20_room
+    st.markdown(f'<div class="shift-total">Σ Phim 20×25 = {f20_boxes} × 125 + {f20_room} = {total20:,} phim</div>',unsafe_allow_html=True)
+    remaining20 = st.number_input("Phim 20×25 tồn trên hệ thống",min_value=0,step=1,key="shift-f20-remaining")
+    used20 = total20 - remaining20
+    st.metric("Sử dụng phim 20×25",f"{used20:,} phim")
+    if used20 < 0: st.warning("Số phim tồn trên hệ thống lớn hơn tổng phim tính được. Vui lòng kiểm tra số liệu.")
+
+    st.markdown('<div class="shift-subhead">6. Tổng hợp giao ban</div>', unsafe_allow_html=True)
+    st.write(f"**Ngày:** {work_day.strftime('%d/%m/%Y')}  |  **CT:** {ct_cases} ca  |  **MRI:** {mri_cases} ca")
+    st.write(f"**Phim:** 35×43: {total35:,}  |  25×30: {total25:,}  |  20×25: {total20:,}")
+    st.caption("Mẫu sổ chỉ lưu tạm trong phiên Streamlit. Không tự lưu dữ liệu lên máy chủ.")
+    # Export contains patient identifiers. Only download on an authenticated session.
+    report = {
+        "ngay":work_day.isoformat(),
+        "ban_giao":{"thay_hop_25x30":change_2530,"thay_hop_35x43":change_3543,
+                    "nhan_gadovist":gado_receive,"benh_nhan_gadovist":gado_patient,
+                    "nhan_omnipaque":omni_receive,"benh_nhan_omnipaque":omni_patient},
+        "thuoc":{"gadovist_hop":gado_stock,"gadovist_vo":gado_empty,
+                 "omnipaque_lo":omni_stock,"omnipaque_vo":omni_empty},
+        "phim_35x43":{"hop":f35_boxes,"vo":f35_covers,"phim_le":f35_loose,"tong":total35,
+                       "ct_ca":ct_cases,"ct_phim":ct_films,"mri_ca":mri_cases,"mri_phim":mri_films},
+        "phim_25x30":{"hop":f25_boxes,"vo":f25_covers,"phong_a107":a107,
+                       "tong":total25,"ton_he_thong":remaining25,"su_dung":used25},
+        "phim_20x25":{"hop":f20_boxes,"vo":f20_covers,"phim_le_phong":f20_room,
+                       "tong":total20,"ton_he_thong":remaining20,"su_dung":used20}
+    }
+    st.download_button("TẢI BÁO CÁO GIAO BAN (.json)",
+        data=json.dumps(report,ensure_ascii=False,indent=2).encode("utf-8"),
+        file_name=f"so_truc_{work_day.isoformat()}.json",
+        mime="application/json",use_container_width=True)
+    st.warning("Dữ liệu có tên bệnh nhân là thông tin nhạy cảm. Chỉ sử dụng trên hệ thống được bệnh viện cho phép; "
+               "không chia sẻ file báo cáo công khai.")
+
 if st.session_state.utility_page is not None:
     selected = st.session_state.utility_page
     if st.button("← QUAY LẠI THƯ VIỆN", key="utility-return"):
@@ -429,7 +558,9 @@ if st.session_state.utility_page is not None:
                 f'<h2>{html.escape(selected)}</h2>'
                 f'<p>{html.escape(dict(EXTRA_TOOLS).get(selected, ""))}</p></div>',
                 unsafe_allow_html=True)
-    if selected == "Hỏi AI":
+    if selected == "Sổ trực nội bộ":
+        internal_log_page()
+    elif selected == "Hỏi AI":
         st.info("Chức năng Hỏi AI đang được chuẩn bị. Chưa kết nối kho tài liệu đã kiểm duyệt.")
     elif selected == "Tài liệu chuyên ngành":
         st.info("Kho tài liệu chuyên ngành đang được chuẩn bị. Chưa có tài liệu được công bố.")
