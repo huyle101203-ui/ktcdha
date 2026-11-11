@@ -4130,7 +4130,7 @@ def _ktc_gemini_error_detail(err):
     """Extract a safe, bounded Google API error; never display key or request URL."""
     try:
         raw = err.read(8192).decode("utf-8", errors="replace")
-        obj = _json.loads(raw)
+        obj = json.loads(raw)
         item = obj.get("error", {})
         message = str(item.get("message", "Không có thông tin chi tiết từ Google."))
         status = str(item.get("status", ""))
