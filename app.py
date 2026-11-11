@@ -368,6 +368,23 @@ if "utility_menu_open" not in st.session_state:
 st.markdown("""
 <style>
 /* Nút menu teal, nổi bật trên nền sáng */
+/* Menu nằm cố định góc trên bên trái, độc lập với banner KTCĐHA. */
+.st-key-floating_utility_menu {
+  position:fixed!important;
+  top:118px!important;
+  left:20px!important;
+  z-index:999!important;
+  width:245px!important;
+  max-width:calc(100vw - 40px)!important;
+}
+.st-key-floating_utility_menu > div {gap:8px!important}
+.st-key-floating_utility_menu .st-key-utility_menu_toggle button {
+  width:118px!important;
+}
+@media(max-width:700px){
+  .st-key-floating_utility_menu{top:75px!important;left:10px!important;width:220px!important}
+  .st-key-floating_utility_menu .st-key-utility_menu_toggle button{width:102px!important}
+}
 div.st-key-utility_menu_toggle button {
   background:linear-gradient(115deg,#006d85,#0999a9)!important;
   color:#fff!important;
@@ -391,14 +408,11 @@ div.st-key-utility-menu-panel {
 }
 </style>
 """, unsafe_allow_html=True)
-menu_col, spacer_col = st.columns([1.55, 5.45], vertical_alignment="center")
-with menu_col:
-    if st.button("☰  MENU", key="utility_menu_toggle", use_container_width=True):
+with st.container(key="floating_utility_menu"):
+    if st.button("☰  MENU", key="utility_menu_toggle"):
         st.session_state.utility_menu_open = not st.session_state.utility_menu_open
         st.rerun()
-if st.session_state.utility_menu_open:
-    panel, remainder = st.columns([2.8, 4.2], gap="small")
-    with panel:
+    if st.session_state.utility_menu_open:
         with st.container(key="utility-menu-panel", border=True):
             st.markdown("**TIỆN ÍCH & TÀI LIỆU**")
             for name, description in EXTRA_TOOLS:
