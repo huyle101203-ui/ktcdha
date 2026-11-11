@@ -1,4 +1,5 @@
 import json
+import re
 import html
 import base64
 from datetime import datetime, date
@@ -3289,6 +3290,21 @@ def load_articles():
 
 ARTICLES = load_articles()
 
+def render_ktc_article(article):
+    """Render reviewed article text and local figures from the images folder."""
+    content = article.get("content", "")
+    chunks = re.split(r"(\\[\\[KTC_IMAGE:[^\\]]+\\]\\])", content)
+    for chunk in chunks:
+        if chunk.startswith("[[KTC_IMAGE:") and chunk.endswith("]]"):
+            rel = chunk[len("[[KTC_IMAGE:"):-2].strip()
+            path = (BASE / rel).resolve()
+            if path.is_relative_to((BASE / "images").resolve()) and path.is_file():
+                st.image(str(path), use_container_width=True)
+            else:
+                st.caption("Hình minh họa chưa được tải lên: " + Path(rel).name)
+        elif chunk.strip():
+            st.markdown(chunk)
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
@@ -3397,6 +3413,16 @@ XRAY_TECHNIQUES = [
     "Kỹ thuật chụp X-quang Lower leg",
     "Kỹ thuật chụp X-quang VA",
 ]
+
+# Các bài X-quang mới trong articles.json được bổ sung tự động vào danh mục.
+# Không cần chỉnh app.py mỗi khi thêm một bài kỹ thuật mới.
+for _article in ARTICLES:
+    if (_article.get("modality") == "X-quang"
+            and _article.get("category") == "Kỹ thuật chụp"
+            and _article.get("reviewed") is True):
+        _title = str(_article.get("title", "")).strip()
+        if _title and _title not in XRAY_TECHNIQUES:
+            XRAY_TECHNIQUES.append(_title)
 
 # Tên kỹ thuật CT/MRI được chuẩn hóa để hiển thị, CHƯA xác minh
 # là tên nguyên văn trong danh mục kỹ thuật Bộ Y tế.
@@ -3657,7 +3683,7 @@ def scan_library(mod):
         ]
         if articles:
             for article in articles:
-                st.markdown(article.get("content", ""))
+                render_ktc_article(article)
                 for ref in article.get("references", []):
                     if isinstance(ref, str) and ref.startswith(("https://", "http://")):
                         st.markdown(f"Nguồn: {ref}")
@@ -3712,7 +3738,7 @@ def xray_library():
                 st.markdown(f"- {section}")
             st.caption("Chưa có hướng dẫn kỹ thuật hoặc thông số nào được tự động tạo.")
         for article in items:
-            st.markdown(article.get("content", ""))
+            render_ktc_article(article)
             for ref in article.get("references", []):
                 if isinstance(ref, str) and ref.startswith(("https://", "http://")):
                     st.markdown(f"Nguồn: {ref}")
