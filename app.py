@@ -508,6 +508,50 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# v31: On small screens the fixed Streamlit container can be clipped by its
+# parent scroll area. Keep the menu in normal document flow on mobile.
+st.markdown("""
+<style>
+@media (max-width: 767px) {
+  .st-key-floating_utility_menu,
+  div.st-key-floating_utility_menu {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 1 !important;
+    margin: 0 0 12px !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+  .st-key-floating_utility_menu .st-key-utility_menu_toggle button {
+    width: 132px !important;
+    min-height: 46px !important;
+  }
+  .st-key-utility-menu-panel,
+  div.st-key-utility-menu-panel {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 2 !important;
+    overflow: visible !important;
+    background: #e6f6f8 !important;
+  }
+  .st-key-utility-menu-panel div.stButton > button {
+    min-height: 48px !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    font-size: .9rem !important;
+  }
+  .block-container {
+    padding-top: 1rem !important;
+  }
+}
+</style>
+""", unsafe_allow_html=True)
+
 def internal_log_page():
     """Local-session shift report; protected by configured secret; never server-persist PHI."""
     st.markdown("""
