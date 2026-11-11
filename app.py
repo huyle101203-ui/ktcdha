@@ -4126,6 +4126,149 @@ def internal_log_page():
     st.warning("Dữ liệu có tên bệnh nhân là thông tin nhạy cảm. Chỉ sử dụng trên hệ thống được bệnh viện cho phép; "
                "không chia sẻ file báo cáo công khai.")
 
+def render_ai_portal():
+    """Chat trực tiếp qua Gemini API, giới hạn số lượt và không tự phát sinh phí."""
+    import urllib.request
+    import urllib.error
+    import json as _json
+    import time
+
+    st.markdown("""
+    <style>
+    .ktc-ai-banner {background:linear-gradient(120deg,#005d78,#008ba2 68%,#45b8bf);
+        color:white;padding:25px 28px;border-radius:22px;margin:6px 0 18px;
+        box-shadow:0 12px 30px rgba(0,101,125,.16)}
+    .ktc-ai-banner h2{color:#fff!important;margin:4px 0 8px!important;font-size:1.75rem!important}
+    .ktc-ai-banner p{color:#e3f8f9!important;margin:0!important;font-size:.89rem}
+    .ktc-ai-kicker{color:#d4f5f6;font-size:.71rem;font-weight:800;letter-spacing:.13em}
+    @media(max-width:700px){.ktc-ai-banner{padding:20px 17px}.ktc-ai-banner h2{font-size:1.4rem!important}}
+    </style>
+    <div class="ktc-ai-banner"><div class="ktc-ai-kicker">KTCĐHA / TRỢ LÝ AI</div>
+    <h2>Trợ lý Chẩn đoán Hình ảnh</h2>
+    <p>Hỏi và nhận câu trả lời ngay tại KTCĐHA · X-quang · CT · MRI</p></div>
+    """, unsafe_allow_html=True)
+
+    st.info("AI hỗ trợ học tập, có thể trả lời sai. Kiểm chứng tài liệu gốc và quy trình của cơ sở trước khi áp dụng. "
+            "Không nhập tên bệnh nhân, mã hồ sơ, thông tin định danh hoặc dữ liệu bệnh án.")
+    api_key = st.secrets.get("GEMINI_API_KEY", "")
+    if not api_key:
+        st.warning("Chưa kết nối AI. Quản trị viên cần thêm GEMINI_API_KEY vào Streamlit Secrets.")
+        with st.expander("Hướng dẫn cấu hình cho quản trị viên"):
+            st.markdown(
+                "1. Tạo API key tại [Google AI Studio](https://aistudio.google.com/apikey).\\n"
+                "2. Vào Streamlit Community Cloud → ứng dụng KTCĐHA → **Settings → Secrets**.\\n"
+                "3. Thêm dòng `GEMINI_API_KEY = \"API_KEY_CUA_BAN\"` và lưu.\\n"
+                "4. Kiểm tra hạn mức miễn phí và tình trạng thanh toán trong tài khoản Google. "
+                "Không đăng khóa API lên GitHub."
+            )
+        return
+
+    model = st.secrets.get("GEMINI_MODEL", "gemini-2.5-flash")
+    # Không cho phép tùy biến URL từ dữ liệu đầu vào.
+    if not isinstance(model, str) or not model.replace("-", "").replace(".", "").isalnum():
+        st.error("GEMINI_MODEL không hợp lệ.")
+        return
+
+    if "ktc_ai_history" not in st.session_state:
+        st.session_state.ktc_ai_history = []
+    if "ktc_ai_calls" not in st.session_state:
+        st.session_state.ktc_ai_calls = 0
+    history = st.session_state.ktc_ai_history
+
+    col1,col2 = st.columns([2,1], vertical_alignment="center")
+    with col1:
+        st.caption("Hội thoại chỉ giữ trong phiên trình duyệt hiện tại; câu hỏi được gửi đến Google Gemini.")
+    with col2:
+        if st.button("Xóa hội thoại", key="ktc-ai-clear", use_container_width=True):
+            st.session_state.ktc_ai_history = []
+            st.rerun()
+
+    if not history:
+        st.markdown("**Bạn có thể hỏi về:** nguyên lý tạo ảnh, chuỗi xung MRI, kỹ thuật chụp, "
+                    "thông số CT, tiêu chuẩn chất lượng ảnh X-quang và an toàn chẩn đoán hình ảnh.")
+
+    for msg in history:
+        with st.chat_message("user" if msg["role"] == "user" else "assistant"):
+            st.markdown(msg["text"])
+
+    question = st.chat_input("Nhập câu hỏi X-quang, CT, MRI...", key="ktc-ai-input",
+                             max_chars=3000)
+    if not question:
+        return
+    question = question.strip()
+    if not question:
+        return
+    # Giới hạn bảo vệ khỏi tiêu hao hạn mức ngoài ý muốn; không thay thế quota ở phía Google.
+    if st.session_state.ktc_ai_calls >= 25:
+        st.warning("Phiên này đã đạt 25 lượt hỏi. Hãy tải lại phiên hoặc thử sau. "
+                   "Quản trị viên nên đặt hạn mức API ở phía Google.")
+        return
+
+    system_instruction = (
+        "Bạn là KTCĐHA AI, trợ lý học tập chuyên ngành Kỹ thuật Chẩn đoán Hình ảnh. "
+        "Trả lời bằng tiếng Việt, rõ ràng, chính xác, phân biệt kiến thức chắc chắn với "
+        "điều chưa xác minh. Chuyên sâu về X-quang, CT/CLVT và MRI/CHT. "
+        "Không tự nhận đã truy cập website hay văn bản khi không có công cụ truy cập. "
+        "Không bịa nguồn, trích dẫn, thông số protocol, liều thuốc hoặc quy trình cấp cứu. "
+        "Khi được hỏi về kỹ thuật MRI, gợi ý đối chiếu MRI Master; về quy trình tại Việt Nam, "
+        "gợi ý đối chiếu văn bản Bộ Y tế và tài liệu được cơ sở phê duyệt. "
+        "Không đưa ra chỉ định hoặc phác đồ cá thể hóa cho bệnh nhân. "
+        "Nếu thông tin có thể ảnh hưởng an toàn người bệnh, nhắc xác minh với bác sĩ "
+        "và quy trình bệnh viện. Nếu người dùng cung cấp thông tin định danh bệnh nhân, "
+        "nhắc không chia sẻ dữ liệu đó trên chatbot."
+    )
+    # Chỉ gửi 12 lượt trao đổi gần nhất, giới hạn độ dài và chi phí token.
+    recent = (history + [{"role":"user","text":question}])[-12:]
+    contents = [
+        {"role": "user" if item["role"] == "user" else "model",
+         "parts": [{"text": item["text"][:5000]}]}
+        for item in recent
+    ]
+    payload = {
+        "systemInstruction": {"parts": [{"text": system_instruction}]},
+        "contents": contents,
+        "generationConfig": {"temperature": 0.25, "maxOutputTokens": 1600},
+    }
+    with st.chat_message("user"):
+        st.markdown(question)
+    with st.chat_message("assistant"):
+        with st.spinner("KTCĐHA AI đang trả lời..."):
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+                req = urllib.request.Request(
+                    url,
+                    data=_json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+                    headers={"Content-Type": "application/json", "x-goog-api-key": str(api_key)},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=35) as response:
+                    data = _json.load(response)
+                candidates = data.get("candidates", [])
+                parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
+                answer = "\\n".join(p.get("text", "") for p in parts if isinstance(p, dict)).strip()
+                if not answer:
+                    st.warning("Gemini không trả về nội dung. Có thể câu hỏi bị chặn bởi bộ lọc an toàn.")
+                    return
+                st.markdown(answer)
+                st.session_state.ktc_ai_history.extend([
+                    {"role":"user","text":question}, {"role":"assistant","text":answer}
+                ])
+                st.session_state.ktc_ai_calls += 1
+            except urllib.error.HTTPError as err:
+                if err.code == 429:
+                    st.warning("Đã chạm hạn mức Gemini API. Vui lòng thử lại sau; không tự chuyển sang gói trả phí.")
+                elif err.code in (400, 404):
+                    st.error("Yêu cầu hoặc tên model chưa phù hợp với API key. "
+                             "Kiểm tra GEMINI_MODEL trong Streamlit Secrets.")
+                elif err.code in (401,403):
+                    st.error("API key không hợp lệ hoặc chưa có quyền dùng model này.")
+                else:
+                    st.error(f"Không thể kết nối Gemini (mã HTTP {err.code}). Vui lòng thử lại.")
+            except (urllib.error.URLError, TimeoutError):
+                st.error("Kết nối đến Gemini bị gián đoạn hoặc quá thời gian chờ.")
+            except (ValueError, KeyError, IndexError):
+                st.error("Không đọc được phản hồi từ Gemini. Vui lòng thử lại.")
+
 if st.session_state.utility_page is not None:
     selected = st.session_state.utility_page
     if st.button("← QUAY LẠI THƯ VIỆN", key="utility-return"):
@@ -4140,7 +4283,7 @@ if st.session_state.utility_page is not None:
     elif selected == "Sổ trực nội bộ":
         internal_log_page()
     elif selected == "Hỏi AI":
-        st.info("Chức năng Hỏi AI đang được chuẩn bị. Chưa kết nối kho tài liệu đã kiểm duyệt.")
+        render_ai_portal()
     elif selected == "Tài liệu chuyên ngành":
         st.info("Kho tài liệu chuyên ngành đang được chuẩn bị. Chưa có tài liệu được công bố.")
     elif selected == "Xử lý sốc phản vệ":
