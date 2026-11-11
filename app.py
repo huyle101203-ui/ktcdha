@@ -491,13 +491,20 @@ def internal_log_page():
     with c: f35_loose = st.number_input("Phim lẻ 35×43",min_value=0,step=1,key="shift-f35-loose")
     total35 = f35_boxes*125 + f35_loose
     st.markdown(f'<div class="shift-total">Σ Phim 35×43 = {f35_boxes} × 125 + {f35_loose} = {total35:,} phim</div>',unsafe_allow_html=True)
+    system35 = st.number_input("Phim 35×43 trên hệ thống", min_value=0, step=1, key="shift-f35-system")
+    used35 = system35 - total35
+    st.metric("Phim 35×43 đã sử dụng (theo chênh lệch)", f"{used35:,} phim")
     a,b = st.columns(2)
     with a:
         ct_cases = st.number_input("CT – số ca",min_value=0,step=1,key="shift-ct-cases")
-        ct_films = st.number_input("CT – số phim",min_value=0,step=1,key="shift-ct-films")
     with b:
         mri_cases = st.number_input("MRI – số ca",min_value=0,step=1,key="shift-mri-cases")
         mri_films = st.number_input("MRI – số phim",min_value=0,step=1,key="shift-mri-films")
+    ct_films = used35 - mri_films
+    st.metric("CT – số phim (tự tính)", f"{ct_films:,} phim")
+    st.caption("CT = Phim 35×43 trên hệ thống − Tổng phim 35×43 − Phim MRI.")
+    if used35 < 0 or ct_films < 0:
+        st.warning("Kết quả chênh lệch âm. Vui lòng kiểm tra số liệu phim trên hệ thống, tổng phim và phim MRI.")
 
     st.markdown('<div class="shift-subhead">4. Phim 25×30</div>', unsafe_allow_html=True)
     a,b,c = st.columns(3)
@@ -507,9 +514,10 @@ def internal_log_page():
     total25 = f25_boxes*125 + a107
     st.markdown(f'<div class="shift-total">Σ Phim 25×30 = {f25_boxes} × 125 + {a107} = {total25:,} phim</div>',unsafe_allow_html=True)
     remaining25 = st.number_input("Phim 25×30 tồn trên hệ thống",min_value=0,step=1,key="shift-f25-remaining")
-    used25 = total25 - remaining25
+    used25 = remaining25 - total25
     st.metric("Sử dụng phim 25×30",f"{used25:,} phim")
-    if used25 < 0: st.warning("Số phim tồn trên hệ thống lớn hơn tổng phim tính được. Vui lòng kiểm tra số liệu.")
+    st.caption("Sử dụng 25×30 = Phim tồn trên hệ thống − Tổng phim 25×30.")
+    if used25 < 0: st.warning("Tổng phim 25×30 tính được lớn hơn số phim trên hệ thống. Vui lòng kiểm tra số liệu.")
 
     st.markdown('<div class="shift-subhead">5. Phim 20×25</div>', unsafe_allow_html=True)
     a,b,c = st.columns(3)
@@ -526,6 +534,95 @@ def internal_log_page():
     st.markdown('<div class="shift-subhead">6. Tổng hợp giao ban</div>', unsafe_allow_html=True)
     st.write(f"**Ngày:** {work_day.strftime('%d/%m/%Y')}  |  **CT:** {ct_cases} ca  |  **MRI:** {mri_cases} ca")
     st.write(f"**Phim:** 35×43: {total35:,}  |  25×30: {total25:,}  |  20×25: {total20:,}")
+    st.markdown('<div class="shift-subhead">7. Báo cáo giao ban</div>', unsafe_allow_html=True)
+    st.markdown('<div class="shift-subhead">8. Tờ A4 để nhìn và chép vào sổ</div>', unsafe_allow_html=True)
+    def e(value):
+        return html.escape(str(value), quote=True)
+    def n(value):
+        return f"{value:,}"
+    date_text = work_day.strftime("%d/%m/%Y")
+    # Đúng thứ tự cuốn sổ: bàn giao -> thuốc -> phim -> báo cáo giao ban.
+    a4_body = f"""
+    <div class="paper">
+      <h1>Ngày {e(date_text)}</h1>
+      <div class="lines">
+        <p>– Thay {n(change_3543)} hộp phim 35×43</p>
+        <p>– Thay {n(change_2530)} hộp phim 25×30</p>
+        <p>– Nhận {n(gado_receive)} hộp Gado ({e(gado_patient)})</p>
+        <p>– Nhận {n(omni_receive)} lọ Omnipaque ({e(omni_patient)})</p>
+      </div>
+      <section>
+        <p><strong>* Thuốc:</strong> Omnipaque: {n(omni_stock)} lọ / {n(omni_empty)} vỏ</p>
+        <p class="indent">Gadovist: {n(gado_stock)} hộp / {n(gado_empty)} vỏ</p>
+      </section>
+      <section>
+        <p><strong>* Phim 35×43:</strong> {n(f35_boxes)} hộp / {n(f35_covers)} vỏ / {n(f35_loose)} phim lẻ
+          <b class="sum">Σ {n(total35)}</b></p>
+        <p>– MRI: {n(mri_cases)} ca / {n(mri_films)} phim</p>
+        <p>– CT: {n(ct_cases)} ca / {n(ct_films)} phim</p>
+        <p class="hint">Hệ thống: {n(system35)} phim · Đã sử dụng: {n(used35)} phim</p>
+      </section>
+      <section>
+        <p><strong>* Phim 25×30:</strong> {n(f25_boxes)} hộp / {n(f25_covers)} vỏ
+          <b class="sum">Σ {n(total25)}</b></p>
+        <p>– Phòng A107: {n(a107)} phim <span class="side">Sử dụng: {n(used25)} phim</span></p>
+        <p class="hint">Phim trên hệ thống: {n(remaining25)}</p>
+      </section>
+      <section>
+        <p><strong>* Phim 20×25:</strong> {n(f20_boxes)} hộp / {n(f20_covers)} vỏ
+          <b class="sum">Σ {n(total20)}</b></p>
+        <p>– Phim lẻ / phòng: {n(f20_room)} phim <span class="side">Sử dụng: {n(used20)} phim</span></p>
+        <p class="hint">Phim trên hệ thống: {n(remaining20)}</p>
+      </section>
+      <h2>Báo cáo giao ban {e(date_text)}</h2>
+      <div class="summary">
+        <p>– XQ: .......... ca</p>
+        <p>– CT: .......... ca</p>
+        <p>– MRI: .......... ca</p>
+        <p>– Siêu âm: Σ .......... <span class="side">SACC: .......... · SUP: ..........</span></p>
+      </div>
+    </div>"""
+    a4_style = """
+    @page { size: A4 portrait; margin: 15mm; }
+    *{box-sizing:border-box}
+    body{margin:0;background:#e8f3f5;color:#202e38;font-family:Arial,'DejaVu Sans',sans-serif}
+    .paper{width:210mm;min-height:297mm;margin:18px auto;background:#fff;padding:20mm 20mm 16mm;
+      box-shadow:0 9px 30px #173b4a28;font-size:15px;line-height:1.55}
+    h1{text-align:center;font-size:21px;margin:0 0 23px;color:#153b4b}
+    h2{text-align:center;font-size:19px;margin:28px 0 18px;color:#153b4b}
+    p{margin:5px 0}section{margin-top:22px}.indent{padding-left:75px}
+    .sum{float:right;color:#006e86}.side{float:right}.hint{font-size:12px;color:#68808a}
+    .summary{max-width:450px;margin:auto}.summary p{margin:9px 0}
+    .print-toolbar{text-align:center;padding:14px}
+    .print-toolbar button{background:#007e96;color:#fff;border:0;padding:12px 22px;
+       font-size:15px;border-radius:10px;cursor:pointer}
+    @media print{
+      body{background:#fff}.paper{margin:0;width:auto;min-height:0;padding:0;box-shadow:none}
+      .print-toolbar{display:none}section{break-inside:avoid}
+    }
+    @media(max-width:850px){.paper{width:100%;min-height:0;margin:0;padding:20px;font-size:13px}}
+    """
+    document_html = (
+        '<!doctype html><html lang="vi"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        '<title>Sổ trực '+e(date_text)+'</title><style>'+a4_style+'</style></head>'
+        '<body><div class="print-toolbar"><button onclick="window.print()">IN / LƯU PDF KHỔ A4</button></div>'
+        +a4_body+'</body></html>'
+    )
+    st.caption("Xem trước ngay bên dưới. Bấm tải mẫu A4 rồi mở bằng trình duyệt để in hoặc lưu PDF.")
+    import streamlit.components.v1 as components
+    components.html(document_html, height=880, scrolling=True)
+    st.download_button(
+        "TẢI TỜ A4 ĐÃ ĐIỀN (.html)",
+        data=document_html.encode("utf-8"),
+        file_name=f"so_truc_A4_{work_day.isoformat()}.html",
+        mime="text/html",
+        use_container_width=True,
+        key="shift-a4-download",
+    )
+    st.caption("Mở file HTML đã tải → chọn In (Ctrl/Cmd + P) → khổ A4 → In hoặc Lưu dưới dạng PDF.")
+    st.warning("Tờ A4 có thể chứa tên bệnh nhân. Không lưu hoặc in trên thiết bị công cộng.")
+
     st.caption("Mẫu sổ chỉ lưu tạm trong phiên Streamlit. Không tự lưu dữ liệu lên máy chủ.")
     # Export contains patient identifiers. Only download on an authenticated session.
     report = {
@@ -536,6 +633,7 @@ def internal_log_page():
         "thuoc":{"gadovist_hop":gado_stock,"gadovist_vo":gado_empty,
                  "omnipaque_lo":omni_stock,"omnipaque_vo":omni_empty},
         "phim_35x43":{"hop":f35_boxes,"vo":f35_covers,"phim_le":f35_loose,"tong":total35,
+                       "tren_he_thong":system35,"da_su_dung":used35,
                        "ct_ca":ct_cases,"ct_phim":ct_films,"mri_ca":mri_cases,"mri_phim":mri_films},
         "phim_25x30":{"hop":f25_boxes,"vo":f25_covers,"phong_a107":a107,
                        "tong":total25,"ton_he_thong":remaining25,"su_dung":used25},
