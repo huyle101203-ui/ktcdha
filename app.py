@@ -1,4 +1,5 @@
 import json
+import html
 from pathlib import Path
 import streamlit as st
 
@@ -56,15 +57,17 @@ div.stButton>button:hover{background:#00687d!important;border-color:#00687d!impo
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown('\n<style>\n.catalog-hero{margin:20px 0 24px;padding:30px 34px;border-radius:24px;background:linear-gradient(115deg,#006c84,#008da4 65%,#49b7be);box-shadow:0 16px 32px #006b8429;position:relative;overflow:hidden}\n.catalog-hero:after{content:"";position:absolute;right:-60px;top:-120px;width:300px;height:300px;border:38px solid #ffffff17;border-radius:50%}\n.catalog-hero .eyebrow{font-size:.72rem;letter-spacing:.15em;color:#d1f5f7;font-weight:800}\n.catalog-hero h2{font-size:1.85rem!important;color:white!important;margin:10px 0!important;line-height:1.4!important}\n.catalog-hero p{color:#e5f8fa;font-size:.88rem;max-width:660px}\n.catalog-chip{display:inline-block;margin:8px 8px 0 0;padding:7px 12px;border:1px solid #ffffff45;border-radius:25px;background:#ffffff1e;color:white;font-size:.74rem;font-weight:700}\n.catalog-label{font-size:.75rem;letter-spacing:.07em;color:#567c87;font-weight:800;margin:20px 0 8px}\n.catalog-number{font-size:.7rem;color:#00849b;font-weight:800;letter-spacing:.12em}\n.catalog-name{font-size:1rem;color:#164554;font-weight:800;line-height:1.55;margin:8px 0}\n.catalog-meta{font-size:.73rem;color:#72929a;margin-bottom:10px}\ndiv[data-testid="stVerticalBlockBorderWrapper"]{border-radius:19px!important;border-color:#b9dfe4!important;background:linear-gradient(145deg,#fff,#e9f8fa)!important;box-shadow:0 5px 17px #006c840b;transition:transform .18s,box-shadow .18s}\ndiv[data-testid="stVerticalBlockBorderWrapper"]:hover{transform:translateY(-2px);box-shadow:0 12px 24px #006c8420;border-color:#78c9d2!important}\n[data-testid="stTextInput"] input{border-radius:13px!important;background:#fff!important;min-height:48px!important}\n@media(max-width:700px){.catalog-hero{padding:22px}.catalog-hero h2{font-size:1.45rem!important}}\n</style>\n', unsafe_allow_html=True)
+
 ICONS = {
 "X-quang": """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="23" y="8" width="54" height="84" rx="8" stroke="#007E96" stroke-width="3.5"/><path d="M50 20v62" stroke="#007E96" stroke-width="3"/><path d="M46 33c-14-14-20-2-20 15 0 17 9 24 20 24V33ZM54 33c14-14 20-2 20 15 0 17-9 24-20 24V33Z" fill="#92D7DB" fill-opacity=".75" stroke="#007E96" stroke-width="2.5"/><path d="M33 45l13 5m-13 7 13 3m21-15-13 5m13 7-13 3" stroke="white" stroke-width="2.5"/></svg>""",
 "CT": """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="8" width="72" height="76" rx="17" fill="#E0F3F5" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="43" r="25" fill="white" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="43" r="17" stroke="#92D7DB" stroke-width="5"/><path d="M50 62v28m-22 0h44" stroke="#007E96" stroke-width="4" stroke-linecap="round"/><rect x="35" y="61" width="30" height="9" rx="4" fill="#92D7DB" stroke="#007E96" stroke-width="2"/></svg>""",
 "MRI": """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="7" width="76" height="81" rx="19" fill="#E0F3F5" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="44" r="27" fill="white" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="44" r="18" fill="#D4EFF2" stroke="#92D7DB" stroke-width="3"/><path d="M50 52v35m-28 0h56" stroke="#007E96" stroke-width="4" stroke-linecap="round"/><path d="M38 65h24l8 15H30l8-15Z" fill="white" stroke="#007E96" stroke-width="2.5"/></svg>"""
 }
 SUBS = {
-"X-quang": [("Quy trình chụp", "Tư thế chụp và kỹ thuật thực hiện"), ("Kỹ thuật X-quang", "Thông số và chất lượng hình ảnh"), ("Hình ảnh bệnh lý", "Nhận diện các dấu hiệu X-quang")],
-"CT": [("Quy trình chụp", "Các quy trình theo vùng giải phẫu"), ("Kỹ thuật CT", "Thông số và tái tạo hình ảnh"), ("Hình ảnh bệnh lý", "Dấu hiệu bệnh lý trên CT")],
-"MRI": [("Quy trình chụp", "Định vị lát cắt và chuỗi xung"), ("Kỹ thuật MRI", "Chuỗi xung và tối ưu hình ảnh"), ("Hình ảnh bệnh lý", "Dấu hiệu bệnh lý trên MRI")]
+    "X-quang": [("Kỹ thuật chụp", "Danh sách kỹ thuật X-quang theo bộ phận"), ("Hình ảnh bệnh lý", "Hình ảnh và dấu hiệu bệnh lý X-quang")],
+    "CT": [("Kỹ thuật chụp", "Danh sách kỹ thuật chụp cắt lớp vi tính"), ("Hình ảnh bệnh lý", "Hình ảnh và dấu hiệu bệnh lý trên CT")],
+    "MRI": [("Kỹ thuật chụp", "Danh sách kỹ thuật chụp cộng hưởng từ"), ("Hình ảnh bệnh lý", "Hình ảnh và dấu hiệu bệnh lý trên MRI")],
 }
 EN = {"X-quang":"RADIOGRAPHY", "CT":"COMPUTED TOMOGRAPHY", "MRI":"MAGNETIC RESONANCE"}
 if "modality" not in st.session_state: st.session_state.modality=None
@@ -122,7 +125,7 @@ XRAY_TECHNIQUES = [
     "Kỹ thuật chụp X-quang xương ức",
     "Kỹ thuật chụp X-quang cột sống toàn trục (Whole body)",
     "Kỹ thuật chụp X-quang Lower leg",
-    "Kỹ thuật chụp X-quang VA"
+    "Kỹ thuật chụp X-quang VA",
 ]
 
 # Tên kỹ thuật CT/MRI được chuẩn hóa để hiển thị, CHƯA xác minh
@@ -174,26 +177,91 @@ MRI_TECHNIQUES = [
 if "scan_article" not in st.session_state:
     st.session_state.scan_article = None
 
+
+st.markdown('\n<style>\n/* v15: premium editorial library instead of repetitive cards */\n.catalog-hero{padding:36px 40px 34px!important;border-radius:26px!important;background:radial-gradient(circle at 92% 12%,#48bec8 0,transparent 29%),linear-gradient(115deg,#005b75,#007f97 60%,#16a3ae)!important;box-shadow:0 22px 42px #005a7528!important}\n.catalog-hero h2{font-size:2.05rem!important;letter-spacing:-.04em}\n.catalog-hero .eyebrow{letter-spacing:.2em!important}\n.catalog-label{padding:12px 3px;border-bottom:1px solid #add5dc;margin:25px 0 18px!important;font-size:.74rem!important}\n.catalog-illustration{height:76px;width:76px;display:flex;align-items:center;justify-content:center;border-radius:18px;background:linear-gradient(140deg,#cceff1,#f4ffff);border:1px solid #b6e0e4;box-shadow:inset 0 1px 0 #fff}\n.catalog-item-category{font-size:.65rem;font-weight:800;color:#007e96;letter-spacing:.12em;margin-bottom:8px}\n.catalog-item-category span{color:#91aab2}\n.catalog-item-name{font-size:1.05rem;font-weight:800;color:#173c4b;line-height:1.55;letter-spacing:-.02em}\n.catalog-item-sub{font-size:.73rem;color:#76949b;margin-top:8px}\ndiv[data-testid="stVerticalBlockBorderWrapper"]{border:1px solid #c2e0e4!important;border-left:4px solid #00869e!important;border-radius:17px!important;background:linear-gradient(110deg,#fff 10%,#f2fbfc 100%)!important;box-shadow:0 5px 17px #006c840a!important;transition:transform .18s,box-shadow .18s}\ndiv[data-testid="stVerticalBlockBorderWrapper"]:hover{transform:translateX(3px);box-shadow:0 12px 26px #006c8421!important;border-left-color:#27b5bd!important}\n@media(max-width:700px){.catalog-hero{padding:25px 22px!important}.catalog-hero h2{font-size:1.5rem!important}.catalog-illustration{height:50px;width:50px}.catalog-illustration svg{width:30px;height:30px}.catalog-item-name{font-size:.85rem}.catalog-item-sub{display:none}.catalog-item-category{font-size:.54rem}}\n</style>\n', unsafe_allow_html=True)
+
+def catalog_header(title, eyebrow, description, count, status):
+    st.markdown(
+        f'<div class="catalog-hero"><div class="eyebrow">{html.escape(eyebrow)}</div>'
+        f'<h2>{html.escape(title)}</h2><p>{html.escape(description)}</p>'
+        f'<span class="catalog-chip">{count} mục kỹ thuật</span>'
+        f'<span class="catalog-chip">{html.escape(status)}</span></div>',
+        unsafe_allow_html=True,
+    )
+
+def catalog_tiles(titles, prefix, select):
+    """Premium editorial list: one full-width technique per row, no tiled cards."""
+    if not titles:
+        st.info("Không tìm thấy kỹ thuật phù hợp.")
+        return
+    st.markdown(
+        f'<div class="catalog-label">KHÁM PHÁ THƯ VIỆN <span style="float:right">'
+        f'{len(titles):02d} KỸ THUẬT</span></div>',
+        unsafe_allow_html=True,
+    )
+    # Numbering, topic label, and visual motif are presentation-only.
+    for index, name in enumerate(titles):
+        lower = name.casefold()
+        if any(x in lower for x in ("mạch", "cta", "động mạch")):
+            kind, symbol = "KHẢO SÁT MẠCH MÁU", "vascular"
+        elif any(x in lower for x in ("cột sống", "thắt lưng", "cùng cụt")):
+            kind, symbol = "CỘT SỐNG", "spine"
+        elif any(x in lower for x in ("sọ", "não", "xoang", "mặt", "mũi", "hốc mắt", "tuyến yên", "schuller", "blondeau", "hirtz", "hirzt")):
+            kind, symbol = "ĐẦU · MẶT · CỔ", "head"
+        elif any(x in lower for x in ("phổi", "ngực", "bụng", "chậu", "kub", "asp", "ức")):
+            kind, symbol = "NGỰC · BỤNG · CHẬU", "torso"
+        else:
+            kind, symbol = "CƠ XƯƠNG KHỚP", "bone"
+        icons = {
+            "vascular": '<path d="M24 7v10m0 0L13 29m11-12 11 12M13 29v11m22-11v11M13 40l-6 5m28-5 6 5"/>',
+            "spine": '<path d="M24 5c-7 7 7 10 0 17s7 10 0 17 0 6 0 6"/><path d="M17 11h14M17 23h14M17 35h14"/>',
+            "head": '<path d="M15 36c-7-5-9-17-3-25C18 3 32 4 37 13c4 8 0 17-8 21v9H17v-7z"/><path d="M16 23h3m10 0h3M20 30q4 4 8 0"/>',
+            "torso": '<path d="M24 9v32M20 14c-6-7-13 0-13 13s9 14 13 6V14zm8 0c6-7 13 0 13 13s-9 14-13 6V14z"/>',
+            "bone": '<path d="M13 11a6 6 0 1 0-8 8l22 22a6 6 0 1 0 8-8L13 11z"/><path d="M11 15l4-4m16 26 4-4"/>',
+        }
+        svg = (
+            '<svg width="43" height="43" viewBox="0 0 48 48" fill="none" '
+            'stroke="#007f96" stroke-width="2.2" stroke-linecap="round" '
+            'stroke-linejoin="round" aria-hidden="true">'
+            + icons[symbol] + '</svg>'
+        )
+        with st.container(border=True):
+            left, middle, right = st.columns([0.95, 5.2, 1.55], gap="medium", vertical_alignment="center")
+            with left:
+                st.markdown(
+                    f'<div class="catalog-illustration">{svg}</div>',
+                    unsafe_allow_html=True,
+                )
+            with middle:
+                st.markdown(
+                    f'<div class="catalog-item-name">{html.escape(name)}</div>',
+                    unsafe_allow_html=True,
+                )
+            with right:
+                if st.button("KHÁM PHÁ  ↗", key=f"{prefix}-{index}", use_container_width=True):
+                    select(name)
+                    st.rerun()
+
+def choose_scan(name):
+    st.session_state.scan_article = name
+
+def choose_xray(name):
+    if name == XRAY_CHEST_GROUP:
+        st.session_state.xray_group = name
+    else:
+        st.session_state.xray_article = name
+
 def scan_library(mod):
     selected = st.session_state.scan_article
     titles = CT_TECHNIQUES if mod == "CT" else MRI_TECHNIQUES
     short = "CLVT" if mod == "CT" else "CHT"
     if selected is None:
-        st.markdown(f'<div class="sectiontitle">DANH SÁCH KỸ THUẬT CHỤP {short}</div>', unsafe_allow_html=True)
-        st.caption(f"{len(titles)} kỹ thuật · Tên hiển thị đang chờ đối chiếu với danh mục Bộ Y tế.")
-        query = st.text_input("Tìm kỹ thuật", placeholder="Nhập vùng khảo sát, mạch máu, thuốc...", key=f"scan-query-{mod}")
+        catalog_header(f"Kỹ thuật chụp {short}", f"THƯ VIỆN {mod} / KỸ THUẬT CHỤP",
+                       "Danh mục kỹ thuật theo vùng khảo sát. Nội dung chuyên môn được bổ sung sau khi kiểm duyệt.",
+                       len(titles), "Chờ đối chiếu tên Bộ Y tế")
+        query = st.text_input("Tìm kỹ thuật", placeholder="Tìm vùng khảo sát, mạch máu, thuốc...", key=f"scan-query-{mod}")
         results = [name for name in titles if query.casefold().strip() in name.casefold()]
-        if not results:
-            st.info("Không tìm thấy kỹ thuật phù hợp.")
-        for index, name in enumerate(results):
-            with st.container(border=True):
-                c1, c2 = st.columns([5, 1], vertical_alignment="center")
-                with c1:
-                    st.markdown(f"**{name}**")
-                with c2:
-                    if st.button("Xem →", key=f"scan-{mod}-{index}"):
-                        st.session_state.scan_article = name
-                        st.rerun()
+        catalog_tiles(results, f"scan-{mod}", choose_scan)
     else:
         if st.button("← DANH SÁCH KỸ THUẬT", key="scan-back"):
             st.session_state.scan_article = None
@@ -235,28 +303,15 @@ def xray_library():
             if st.button("← DANH SÁCH KỸ THUẬT", key="xray-group-back"):
                 st.session_state.xray_group = None
                 st.rerun()
-            st.markdown('<div class="sectiontitle">KỸ THUẬT CHỤP X-QUANG PHỔI</div>', unsafe_allow_html=True)
-            st.caption("Chọn tư thế chụp để mở bài học.")
+            catalog_header("Kỹ thuật chụp X-quang phổi", "X-QUANG / TƯ THẾ CHỤP",
+                           "Chọn một tư thế để mở bài học tương ứng.", len(XRAY_CHEST_VIEWS), "Thẳng · Nghiêng · Chếch")
             titles = XRAY_CHEST_VIEWS
         else:
-            st.markdown('<div class="sectiontitle">KỸ THUẬT CHỤP X-QUANG</div>', unsafe_allow_html=True)
-            st.caption(f"{len(XRAY_TECHNIQUES)} mục kỹ thuật · Chọn tên kỹ thuật để mở bài học. Nội dung chuyên môn sẽ được bổ sung sau khi kiểm chứng.")
+            catalog_header("Kỹ thuật chụp X-quang", "THƯ VIỆN X-QUANG / KỸ THUẬT",
+                           "Tra cứu nhanh kỹ thuật chụp theo bộ phận cơ thể.", len(XRAY_TECHNIQUES), "Chờ kiểm duyệt nội dung")
             query = st.text_input("Tìm kỹ thuật chụp", placeholder="Ví dụ: phổi, sọ, khớp gối...")
             titles = [t for t in XRAY_TECHNIQUES if query.casefold().strip() in t.casefold() or (t == XRAY_CHEST_GROUP and "ngực" in query.casefold())]
-        if not titles:
-            st.info("Không tìm thấy kỹ thuật phù hợp.")
-        for index, title in enumerate(titles):
-            with st.container(border=True):
-                col1, col2 = st.columns([5, 1], vertical_alignment="center")
-                with col1:
-                    st.markdown(f"**{title}**")
-                with col2:
-                    if st.button("Xem →", key=f"xray-{index}-{title}"):
-                        if title == XRAY_CHEST_GROUP:
-                            st.session_state.xray_group = XRAY_CHEST_GROUP
-                        else:
-                            st.session_state.xray_article = title
-                        st.rerun()
+        catalog_tiles(titles, "xray", choose_xray)
     else:
         if st.button("← QUAY LẠI", key="xray-article-back"):
             st.session_state.xray_article = None
@@ -291,15 +346,12 @@ if mod is None:
         with col:
             st.markdown(f'<div class="modcard"><div class="modvisual">{ICONS[name]}</div><div class="modname">{name}</div><div class="moddesc">{EN[name]}</div></div>', unsafe_allow_html=True)
             if st.button(f"VÀO THƯ VIỆN {name.upper()}  →", key=f"open-{name}"):
-                if name == "X-quang":
-                    go("X-quang", "Kỹ thuật X-quang")
-                else:
-                    go(name)
+                go(name)
 elif sub is None:
     if st.button("← TRANG CHỦ", key="home"): go()
     st.markdown(f'<div class="sectiontitle">THƯ VIỆN {mod.upper()}</div>', unsafe_allow_html=True)
     st.caption("Chọn nhóm kiến thức để xem danh sách bài học")
-    cols=st.columns(3,gap="large")
+    cols=st.columns(2,gap="large")
     for col,(title,desc) in zip(cols,SUBS[mod]):
         with col:
             st.markdown(f'<div class="subcard"><h3>{title}</h3><p>{desc}</p></div>',unsafe_allow_html=True)
@@ -307,11 +359,21 @@ elif sub is None:
                 go(mod,title)
 else:
     if st.button(f"← QUAY LẠI {mod.upper()}",key="back"): go(mod)
-    if mod=="X-quang" and sub=="Kỹ thuật X-quang":
+    if mod=="X-quang" and sub=="Kỹ thuật chụp":
         xray_library()
         st.stop()
-    if mod in ("CT", "MRI") and sub=="Quy trình chụp":
+    if mod in ("CT", "MRI") and sub=="Kỹ thuật chụp":
         scan_library(mod)
+        st.stop()
+    if sub == "Hình ảnh bệnh lý":
+        st.markdown(
+            f'<div class="catalog-hero"><div class="eyebrow">THƯ VIỆN {html.escape(mod.upper())}</div>'
+            f'<h2>Hình ảnh bệnh lý {html.escape(mod)}</h2>'
+            '<p>Chuyên mục đang được chuẩn bị. Nội dung và hình ảnh sẽ được bổ sung sau khi kiểm chứng nguồn.</p>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+        st.info("Chưa có dữ liệu hình ảnh bệnh lý. Nội dung sẽ được cập nhật sau.")
         st.stop()
     st.markdown(f'<div class="sectiontitle">{sub} / {mod}</div>',unsafe_allow_html=True)
     q=st.text_input("Tìm bài học",placeholder="Nhập tên bài hoặc từ khóa...")
