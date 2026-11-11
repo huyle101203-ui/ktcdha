@@ -336,7 +336,58 @@ def xray_library():
                 if isinstance(ref, str) and ref.startswith(("https://", "http://")):
                     st.markdown(f"Nguồn: {ref}")
 
+# Menu tiện ích dùng chung cho cả ba chuyên ngành.
+# Các công cụ liên quan quyết định lâm sàng chưa được kích hoạt khi chưa xác minh.
+EXTRA_TOOLS = [
+    ("Hỏi AI", "Trợ lý tra cứu tài liệu"),
+    ("Tính độ lọc cầu thận eGFR", "Công cụ tính eGFR"),
+    ("Tính lượng thuốc", "Hỗ trợ tính liều/lượng thuốc"),
+    ("Tốc độ tiêm", "Công cụ tính tốc độ tiêm"),
+    ("Xử lý sốc phản vệ", "Tài liệu xử trí cấp cứu"),
+    ("Tài liệu chuyên ngành", "Kho tài liệu tham khảo"),
+]
+if "utility_page" not in st.session_state:
+    st.session_state.utility_page = None
+
+def open_utility(name):
+    st.session_state.utility_page = name
+    st.rerun()
+
+st.markdown("""
+<style>
+/* Menu tiện ích, giữ nguyên thiết kế thư viện */
+.utility-title{font-size:1.45rem;font-weight:800;color:#174656;margin:22px 0 9px}
+.utility-desc{font-size:.9rem;color:#668994;line-height:1.8}
+[data-testid="stPopover"] button{border-radius:12px!important;font-weight:800!important}
+</style>
+""", unsafe_allow_html=True)
+menu_col, spacer_col = st.columns([1.7, 5.3], vertical_alignment="center")
+with menu_col:
+    with st.popover("☰  MENU", use_container_width=True):
+        st.markdown("**TIỆN ÍCH & TÀI LIỆU**")
+        for name, description in EXTRA_TOOLS:
+            if st.button(name + "  →", key="utility-open-" + name, use_container_width=True):
+                open_utility(name)
 st.markdown('<div class="site-head"><div class="brand"><div class="brandmark">✚</div><div><div class="brandtitle">KTCĐHA</div><div class="brandsub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div><div class="headright">BY HUUHUY</div></div>', unsafe_allow_html=True)
+if st.session_state.utility_page is not None:
+    selected = st.session_state.utility_page
+    if st.button("← QUAY LẠI THƯ VIỆN", key="utility-return"):
+        st.session_state.utility_page = None
+        st.rerun()
+    st.markdown(f'<div class="catalog-hero"><div class="eyebrow">KTCĐHA / TIỆN ÍCH</div>'
+                f'<h2>{html.escape(selected)}</h2>'
+                f'<p>{html.escape(dict(EXTRA_TOOLS).get(selected, ""))}</p></div>',
+                unsafe_allow_html=True)
+    if selected == "Hỏi AI":
+        st.info("Chức năng Hỏi AI đang được chuẩn bị. Chưa kết nối kho tài liệu đã kiểm duyệt.")
+    elif selected == "Tài liệu chuyên ngành":
+        st.info("Kho tài liệu chuyên ngành đang được chuẩn bị. Chưa có tài liệu được công bố.")
+    elif selected == "Xử lý sốc phản vệ":
+        st.warning("Chưa có quy trình xử trí được đối chiếu và phê duyệt. Trong tình huống cấp cứu thực tế, thực hiện quy trình cấp cứu của cơ sở và gọi hỗ trợ khẩn cấp.")
+    else:
+        st.info("Công cụ đang được chuẩn bị. Chưa có công thức hoặc thông số được xác minh để sử dụng trong thực hành.")
+    st.stop()
+
 mod=st.session_state.modality
 sub=st.session_state.sub
 if mod is None:
