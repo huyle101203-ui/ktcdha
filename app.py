@@ -4145,11 +4145,10 @@ def _ktc_gemini_error_detail(err):
 
 
 def render_ai_portal():
-    """Chat trực tiếp qua Gemini API, giới hạn số lượt và không tự phát sinh phí."""
+    """OpenAI API trial: chat in-app, short context and token usage reporting."""
+    import json as _json
     import urllib.request
     import urllib.error
-    import json as _json
-    import time
 
     st.markdown("""
     <style>
@@ -4159,203 +4158,139 @@ def render_ai_portal():
     .ktc-ai-banner h2{color:#fff!important;margin:4px 0 8px!important;font-size:1.75rem!important}
     .ktc-ai-banner p{color:#e3f8f9!important;margin:0!important;font-size:.89rem}
     .ktc-ai-kicker{color:#d4f5f6;font-size:.71rem;font-weight:800;letter-spacing:.13em}
-    /* Chat avatars and readable chat bubbles on desktop and mobile */
-    [data-testid="stChatMessage"] {border-radius:16px!important;padding:14px 16px!important;
+    [data-testid="stChatMessage"]{border-radius:16px!important;padding:14px 16px!important;
         margin:9px 0!important;border:1px solid rgba(0,125,148,.12)!important}
-    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-        background:#e5f5f8!important}
-    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-        background:#fff!important}
-    [data-testid="stChatMessageAvatarUser"] {background:#d4eef3!important;border-radius:50%!important}
-    [data-testid="stChatMessageAvatarAssistant"] {background:#007e96!important;border-radius:50%!important}
-    [data-testid="stChatMessage"] p {color:#193b48!important;line-height:1.65!important}
-    [data-testid="stExpander"] {border-radius:12px!important;border:1px solid #c5e3e9!important}
-    [data-testid="stExpander"] summary {font-weight:600!important;color:#245e6e!important}
-    @media(max-width:700px){[data-testid="stChatMessage"]{padding:11px!important}}
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]){background:#e5f5f8!important}
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]){background:#fff!important}
+    [data-testid="stChatMessageAvatarUser"]{background:#d4eef3!important;border-radius:50%!important}
+    [data-testid="stChatMessageAvatarAssistant"]{background:#007e96!important;border-radius:50%!important}
+    [data-testid="stChatMessage"] p{color:#193b48!important;line-height:1.65!important}
     @media(max-width:700px){.ktc-ai-banner{padding:20px 17px}.ktc-ai-banner h2{font-size:1.4rem!important}}
     </style>
     <div class="ktc-ai-banner"><div class="ktc-ai-kicker">KTCĐHA / TRỢ LÝ AI</div>
     <h2>Trợ lý Chẩn đoán Hình ảnh</h2>
-    <p>Hỏi và nhận câu trả lời ngay tại KTCĐHA · X-quang · CT · MRI</p></div>
+    <p>Hỏi và nhận câu trả lời trực tiếp · X-quang · CT · MRI</p></div>
     """, unsafe_allow_html=True)
+    st.info("AI chỉ hỗ trợ học tập, có thể trả lời sai. Kiểm chứng tài liệu và quy trình bệnh viện. "
+            "Không nhập tên, mã số hoặc dữ liệu định danh bệnh nhân.")
 
-    st.info("AI hỗ trợ học tập, có thể trả lời sai. Kiểm chứng tài liệu gốc và quy trình của cơ sở trước khi áp dụng. "
-            "Không nhập tên bệnh nhân, mã hồ sơ, thông tin định danh hoặc dữ liệu bệnh án.")
-    api_key = st.secrets.get("GEMINI_API_KEY", "")
-    if not api_key:
-        st.warning("Chưa kết nối AI. Quản trị viên cần thêm GEMINI_API_KEY vào Streamlit Secrets.")
-        with st.expander("Hướng dẫn cấu hình cho quản trị viên"):
-            st.markdown(
-                "1. Tạo API key tại [Google AI Studio](https://aistudio.google.com/apikey).\\n"
-                "2. Vào Streamlit Community Cloud → ứng dụng KTCĐHA → **Settings → Secrets**.\\n"
-                "3. Thêm dòng `GEMINI_API_KEY = \"API_KEY_CUA_BAN\"` và lưu.\\n"
-                "4. Kiểm tra hạn mức miễn phí và tình trạng thanh toán trong tài khoản Google. "
-                "Không đăng khóa API lên GitHub."
-            )
+    key = str(st.secrets.get("OPENAI_API_KEY", "")).strip()
+    model = str(st.secrets.get("OPENAI_MODEL", "gpt-4.1-mini")).strip()
+    if not key:
+        st.warning("Chưa có OPENAI_API_KEY trong Streamlit Secrets. "
+                   "Cần tạo API key tại platform.openai.com/api-keys và lưu bí mật trên Streamlit.")
         return
-
-    model = st.secrets.get("GEMINI_MODEL", "gemini-2.5-flash")
-    # Không cho phép tùy biến URL từ dữ liệu đầu vào.
-    if not isinstance(model, str) or not model.replace("-", "").replace(".", "").isalnum():
-        st.error("GEMINI_MODEL không hợp lệ.")
+    # Fixed allowlist prevents a typo or unexpected expensive model during trial.
+    allowed_models = ("gpt-4.1-mini", "gpt-4.1-nano")
+    if model not in allowed_models:
+        st.error("Chế độ thử nghiệm chỉ cho phép gpt-4.1-mini hoặc gpt-4.1-nano. "
+                 "Hãy sửa OPENAI_MODEL trong Secrets.")
         return
+    st.caption(f"Chế độ thử nghiệm tiết kiệm · Model: `{model}` · "
+               "Tối đa 5 câu hỏi/phiên, 600 token trả lời/lượt.")
+    with st.expander("Chi phí và bảo mật API", expanded=False):
+        st.markdown("API OpenAI **có tính phí theo token**, kể cả khi dùng để thử. "
+                    "Bảng giá chính thức: [OpenAI API Pricing](https://openai.com/api/pricing/). "
+                    "Số token sử dụng được hiển thị sau mỗi câu trả lời; "
+                    "giá tiền chính xác phải đối chiếu bảng giá và trang Usage/Billing.")
+        st.warning("Giới hạn 5 lượt chỉ áp dụng **mỗi phiên trình duyệt**, "
+                   "không phải giới hạn chi tiêu toàn website. Nếu website công khai, "
+                   "nhiều người vẫn có thể sử dụng API và tiêu hao tín dụng. "
+                   "Giữ Auto-reload OFF và đặt hạn mức chi tiêu trong OpenAI Platform.")
+        st.caption("Không công khai OPENAI_API_KEY trên GitHub hoặc trong ảnh chụp.")
 
-    # Kiểm tra cấu hình bằng API models; không ghi log hoặc hiển thị khóa bí mật.
-    with st.expander("⚙️ Công cụ kiểm tra kết nối · Chỉ dành cho quản trị viên", expanded=False):
-        st.caption("Kiểm tra quyền truy cập và các model hỗ trợ generateContent. "
-                   "Không hiển thị API key.")
-        if st.button("KIỂM TRA KẾT NỐI AI", key="ktc-ai-diagnostic"):
-            try:
-                diag_req = urllib.request.Request(
-                    "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100",
-                    headers={"x-goog-api-key": str(api_key).strip()},
-                    method="GET",
-                )
-                with urllib.request.urlopen(diag_req, timeout=20) as diag_response:
-                    diag_data = _json.load(diag_response)
-                available = sorted(
-                    item["name"].split("/", 1)[-1]
-                    for item in diag_data.get("models", [])
-                    if "generateContent" in item.get("supportedGenerationMethods", [])
-                    and isinstance(item.get("name"), str)
-                )
-                if available:
-                    st.success("API key truy cập được danh sách model Gemini.")
-                    if model in available:
-                        st.success(f"Model đang chọn `{model}` có trong danh sách hỗ trợ generateContent.")
-                    else:
-                        st.warning(f"Model `{model}` không nằm trong danh sách trả về. "
-                                   "Chọn một model bên dưới và cập nhật GEMINI_MODEL trong Secrets.")
-                    st.code("\\n".join(available[:35]), language=None)
-                else:
-                    st.warning("API key hợp lệ để gọi danh sách, nhưng chưa có model generateContent "
-                               "trong kết quả đầu tiên. Kiểm tra quyền dự án và hạn mức.")
-            except urllib.error.HTTPError as diag_err:
-                detail = _ktc_gemini_error_detail(diag_err)
-                st.error(f"Kiểm tra thất bại (HTTP {diag_err.code}): {detail}")
-            except (urllib.error.URLError, TimeoutError):
-                st.error("Không kết nối được đến Google Gemini. Kiểm tra mạng hoặc thử lại sau.")
-            except (ValueError, KeyError, TypeError):
-                st.error("Google trả về dữ liệu không đúng định dạng dự kiến.")
-
-    if "ktc_ai_history" not in st.session_state:
-        st.session_state.ktc_ai_history = []
-    if "ktc_ai_calls" not in st.session_state:
-        st.session_state.ktc_ai_calls = 0
-    history = st.session_state.ktc_ai_history
-
-    col1,col2 = st.columns([2,1], vertical_alignment="center")
-    with col1:
-        st.caption("Hội thoại chỉ giữ trong phiên trình duyệt hiện tại; câu hỏi được gửi đến Google Gemini.")
-    with col2:
-        if st.button("Xóa hội thoại", key="ktc-ai-clear", use_container_width=True):
-            st.session_state.ktc_ai_history = []
+    if "ktc_openai_history" not in st.session_state:
+        st.session_state.ktc_openai_history = []
+    if "ktc_openai_calls" not in st.session_state:
+        st.session_state.ktc_openai_calls = 0
+    if "ktc_openai_usage" not in st.session_state:
+        st.session_state.ktc_openai_usage = {"prompt": 0, "completion": 0}
+    history = st.session_state.ktc_openai_history
+    c1, c2 = st.columns([2,1], vertical_alignment="center")
+    with c1:
+        st.caption("Hội thoại chỉ lưu trong phiên trình duyệt; câu hỏi được gửi đến OpenAI.")
+    with c2:
+        if st.button("Xóa hội thoại", key="ktc-openai-clear", use_container_width=True):
+            st.session_state.ktc_openai_history = []
             st.rerun()
-
-    if not history:
-        st.markdown("**Bạn có thể hỏi về:** nguyên lý tạo ảnh, chuỗi xung MRI, kỹ thuật chụp, "
-                    "thông số CT, tiêu chuẩn chất lượng ảnh X-quang và an toàn chẩn đoán hình ảnh.")
-
     for msg in history:
-        with st.chat_message("user" if msg["role"] == "user" else "assistant",
-                             avatar="👤" if msg["role"] == "user" else "🩻"):
+        with st.chat_message(msg["role"], avatar="👤" if msg["role"] == "user" else "🩻"):
             st.markdown(msg["text"])
+            if msg.get("usage"):
+                u = msg["usage"]
+                st.caption(f"Token: đầu vào {u['prompt']:,} · đầu ra {u['completion']:,}")
+    u_total = st.session_state.ktc_openai_usage
+    st.caption(f"Đã gửi {st.session_state.ktc_openai_calls}/5 lượt trong phiên · "
+               f"Tổng token đầu vào: {u_total['prompt']:,} · đầu ra: {u_total['completion']:,}.")
+    if st.session_state.ktc_openai_calls >= 5:
+        st.warning("Phiên thử nghiệm đã đủ 5 lượt. Hạn mức này chỉ là giới hạn trên giao diện.")
+        return
 
-    question = st.chat_input("Nhập câu hỏi X-quang, CT, MRI...", key="ktc-ai-input",
-                             max_chars=3000)
-    if not question:
+    question = st.chat_input("Nhập câu hỏi X-quang, CT, MRI...", max_chars=1200, key="ktc-openai-input")
+    if not question or not question.strip():
         return
     question = question.strip()
-    if not question:
-        return
-    # Giới hạn bảo vệ khỏi tiêu hao hạn mức ngoài ý muốn; không thay thế quota ở phía Google.
-    if st.session_state.ktc_ai_calls >= 25:
-        st.warning("Phiên này đã đạt 25 lượt hỏi. Hãy tải lại phiên hoặc thử sau. "
-                   "Quản trị viên nên đặt hạn mức API ở phía Google.")
-        return
-
-    system_instruction = (
-        "Bạn là KTCĐHA AI, trợ lý học tập chuyên ngành Kỹ thuật Chẩn đoán Hình ảnh. "
-        "Trả lời bằng tiếng Việt, rõ ràng, chính xác, phân biệt kiến thức chắc chắn với "
-        "điều chưa xác minh. Chuyên sâu về X-quang, CT/CLVT và MRI/CHT. "
-        "Không tự nhận đã truy cập website hay văn bản khi không có công cụ truy cập. "
-        "Không bịa nguồn, trích dẫn, thông số protocol, liều thuốc hoặc quy trình cấp cứu. "
-        "Khi được hỏi về kỹ thuật MRI, gợi ý đối chiếu MRI Master; về quy trình tại Việt Nam, "
-        "gợi ý đối chiếu văn bản Bộ Y tế và tài liệu được cơ sở phê duyệt. "
-        "Không đưa ra chỉ định hoặc phác đồ cá thể hóa cho bệnh nhân. "
-        "Nếu thông tin có thể ảnh hưởng an toàn người bệnh, nhắc xác minh với bác sĩ "
-        "và quy trình bệnh viện. Nếu người dùng cung cấp thông tin định danh bệnh nhân, "
-        "nhắc không chia sẻ dữ liệu đó trên chatbot."
+    instruction = (
+        "Bạn là KTCĐHA AI, trợ lý học tập Kỹ thuật Chẩn đoán Hình ảnh. "
+        "Trả lời tiếng Việt rõ ràng, có cấu trúc, chính xác về X-quang, CT và MRI. "
+        "Không bịa nguồn, protocol, thông số, liều thuốc hay chỉ dẫn cấp cứu. "
+        "Không khẳng định đã truy cập MRI Master, vnrad.tech hoặc văn bản Bộ Y tế "
+        "khi không có công cụ duyệt web. Nêu giới hạn khi chưa xác minh. "
+        "Không thay thế bác sĩ và quy trình bệnh viện. Không yêu cầu dữ liệu định danh bệnh nhân."
     )
-    # Chỉ gửi 12 lượt trao đổi gần nhất, giới hạn độ dài và chi phí token.
-    recent = (history + [{"role":"user","text":question}])[-12:]
-    contents = [
-        {"role": "user" if item["role"] == "user" else "model",
-         "parts": [{"text": item["text"][:5000]}]}
-        for item in recent
-    ]
-    payload = {
-        "systemInstruction": {"parts": [{"text": system_instruction}]},
-        "contents": contents,
-        "generationConfig": {"temperature": 0.25, "maxOutputTokens": 1600},
-    }
+    messages = [{"role":"system", "content":instruction}]
+    for item in history[-4:]:
+        messages.append({"role":item["role"], "content":item["text"][:1800]})
+    messages.append({"role":"user", "content":question})
+    payload = {"model":model, "messages":messages, "temperature":0.25, "max_tokens":600}
+    req = urllib.request.Request(
+        "https://api.openai.com/v1/chat/completions",
+        data=_json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers={"Authorization":"Bearer "+key, "Content-Type":"application/json"},
+        method="POST",
+    )
     with st.chat_message("user", avatar="👤"):
         st.markdown(question)
     with st.chat_message("assistant", avatar="🩻"):
         with st.spinner("KTCĐHA AI đang trả lời..."):
+            # Count attempts before sending; do not automatically retry billable requests.
+            st.session_state.ktc_openai_calls += 1
             try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-                req = urllib.request.Request(
-                    url,
-                    data=_json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-                    headers={"Content-Type": "application/json", "x-goog-api-key": str(api_key)},
-                    method="POST",
-                )
-                # HTTP 503/temporary 502/504: retry briefly with bounded backoff.
-                # No automatic switch to another model (may incur charges).
-                data = None
-                for attempt in range(3):
-                    try:
-                        with urllib.request.urlopen(req, timeout=35) as response:
-                            data = _json.load(response)
-                        break
-                    except urllib.error.HTTPError as transient:
-                        if transient.code not in (502, 503, 504) or attempt == 2:
-                            raise
-                        time.sleep((1.5, 3.0)[attempt])
-                    except (urllib.error.URLError, TimeoutError):
-                        if attempt == 2:
-                            raise
-                        time.sleep((1.5, 3.0)[attempt])
-                candidates = data.get("candidates", [])
-                parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
-                answer = "\\n".join(p.get("text", "") for p in parts if isinstance(p, dict)).strip()
-                if not answer:
-                    st.warning("Gemini không trả về nội dung. Có thể câu hỏi bị chặn bởi bộ lọc an toàn.")
+                with urllib.request.urlopen(req, timeout=45) as response:
+                    data = _json.load(response)
+                answer = data["choices"][0]["message"]["content"]
+                if not isinstance(answer, str) or not answer.strip():
+                    st.warning("API không trả về nội dung.")
                     return
+                usage = data.get("usage") or {}
+                counts = {"prompt":int(usage.get("prompt_tokens") or 0),
+                          "completion":int(usage.get("completion_tokens") or 0)}
+                st.session_state.ktc_openai_usage["prompt"] += counts["prompt"]
+                st.session_state.ktc_openai_usage["completion"] += counts["completion"]
                 st.markdown(answer)
-                st.session_state.ktc_ai_history.extend([
-                    {"role":"user","text":question}, {"role":"assistant","text":answer}
-                ])
-                st.session_state.ktc_ai_calls += 1
+                st.caption(f"Token lượt này: đầu vào {counts['prompt']:,} · "
+                           f"đầu ra {counts['completion']:,}. "
+                           "Chi phí USD xem trong OpenAI Platform → Usage.")
+                history.extend([{"role":"user","text":question},
+                                {"role":"assistant","text":answer,"usage":counts}])
             except urllib.error.HTTPError as err:
-                detail = _ktc_gemini_error_detail(err)
-                if err.code == 503:
-                    st.warning("Gemini đang quá tải (HTTP 503). KTCĐHA đã thử kết nối lại 3 lần "
-                               "nhưng Google chưa xử lý được. Vui lòng thử lại sau ít phút.")
+                # Do not expose request headers, key, or raw exception.
+                if err.code == 401:
+                    st.error("OpenAI từ chối API key (401). Kiểm tra OPENAI_API_KEY trong Secrets.")
                 elif err.code == 429:
-                    st.warning(f"Gemini đang giới hạn lượt sử dụng (HTTP 429): {detail}")
-                elif err.code in (400, 404):
-                    st.error(f"Gemini từ chối yêu cầu (HTTP {err.code}): {detail}")
-                    st.caption("Mở mục 'Kiểm tra kết nối Gemini' phía trên để xem model được cấp quyền.")
-                elif err.code in (401, 403):
-                    st.error(f"Gemini từ chối quyền truy cập (HTTP {err.code}): {detail}")
+                    st.warning("OpenAI đang giới hạn yêu cầu hoặc tài khoản hết hạn mức (429). "
+                               "Kiểm tra Usage/Billing.")
+                elif err.code == 400:
+                    st.error("OpenAI từ chối yêu cầu (400). Kiểm tra tên model và cấu hình API.")
+                elif err.code == 403:
+                    st.error("Tài khoản không có quyền truy cập model (403).")
                 else:
-                    st.error(f"Lỗi Gemini HTTP {err.code}: {detail}")
+                    st.error(f"OpenAI trả về HTTP {err.code}. Vui lòng kiểm tra trạng thái dịch vụ.")
             except (urllib.error.URLError, TimeoutError):
-                st.error("Kết nối Gemini gián đoạn. Đã tự thử lại tối đa 3 lần; vui lòng thử sau.")
-            except (ValueError, KeyError, IndexError):
-                st.error("Không đọc được phản hồi từ Gemini. Vui lòng thử lại.")
+                st.error("Kết nối OpenAI bị gián đoạn. Vui lòng thử lại sau; "
+                         "kiểm tra Usage trước khi gửi lại để tránh tính phí trùng.")
+            except (ValueError, KeyError, IndexError, TypeError):
+                st.error("Phản hồi OpenAI không đúng định dạng dự kiến.")
 
 if st.session_state.utility_page is not None:
     selected = st.session_state.utility_page
