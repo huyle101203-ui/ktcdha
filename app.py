@@ -1,129 +1,121 @@
 import json
-import base64
 from pathlib import Path
 import streamlit as st
 
-st.set_page_config(page_title="KTCĐHA | Thư viện Chẩn đoán Hình ảnh", page_icon="🏥", layout="wide", initial_sidebar_state="collapsed")
-BASE = Path(__file__).parent
+st.set_page_config(page_title="KTCĐHA | Thư viện kỹ thuật CĐHA", page_icon="🩺", layout="wide", initial_sidebar_state="collapsed")
+BASE = Path(__file__).resolve().parent
 
 def load_articles():
-    path = BASE / "articles.json"
-    if not path.exists():
-        path = BASE / "data" / "articles.json"
-    if not path.exists():
-        return []
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-        return value if isinstance(value, list) else []
-    except (OSError, ValueError):
-        st.error("Không thể đọc articles.json.")
-        return []
+    for file in (BASE / "articles.json", BASE / "data" / "articles.json"):
+        if file.exists():
+            try:
+                value = json.loads(file.read_text(encoding="utf-8"))
+                return value if isinstance(value, list) else []
+            except (ValueError, OSError):
+                st.warning("Không đọc được dữ liệu articles.json")
+                return []
+    return []
 
 ARTICLES = load_articles()
-st.markdown('''
+
+st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
-html,body,[data-testid="stApp"],button,input {font-family:'Be Vietnam Pro',sans-serif!important}
-[data-testid="stAppViewContainer"]{background:#F7FBFC}
+:root{--teal:#007e96;--aqua:#92d7db;--ink:#153a45}
+html,body,[class*="st-"],button,input{font-family:'Be Vietnam Pro',sans-serif!important}
+[data-testid="stAppViewContainer"]{background:linear-gradient(155deg,#e0f3f5 0%,#f0fafb 45%,#d7eff2 100%)}
 [data-testid="stSidebar"],[data-testid="collapsedControl"]{display:none!important}
-.block-container{max-width:1160px;padding-top:1.7rem;padding-bottom:3rem}
-h1,h2,h3{color:#075C72;letter-spacing:-.035em}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:25px}
-.logo{width:47px;height:47px;border-radius:13px;background:#DDF3F4;color:#00849B;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:800}
-.brand{font-size:1.55rem;font-weight:800;color:#007C96;line-height:1.2}
-.brand-sub{font-size:.69rem;color:#6997A0;letter-spacing:.08em}
-.intro{text-align:center;padding:28px 10px 22px}
-.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.13em;color:#00849B}
-.intro h1{font-size:2.2rem;margin:12px 0}
-.intro p{color:#688C95}
-.mod-card{background:white;border:1px solid #D9EDF0;border-radius:22px;padding:25px 12px 15px;text-align:center;min-height:178px;box-shadow:0 9px 24px rgba(23,93,62,.04)}
-.mod-icon{display:inline-flex;align-items:center;justify-content:center;width:92px;height:92px;border-radius:22px;background:#E7F7F8;margin-bottom:15px}.mod-icon img{width:72px;height:72px}
-.mod-title{font-size:1.35rem;font-weight:800;color:#086D82}
-.mod-en{font-size:.78rem;color:#7598A0;margin-top:5px}
-.section-card{background:white;border:1px solid #D9EDF0;border-radius:15px;padding:18px;min-height:105px}
-.section-card strong{color:#08778B}
-.section-card p{color:#6B9299;font-size:.82rem;margin:7px 0 0}
-div.stButton>button{border-radius:13px;border:1px solid #CDE8EC;background:#fff;color:#007C96;font-weight:700;width:100%;min-height:44px}
-div.stButton>button:hover{background:#E7F7F8;border-color:#00849B;color:#006B82}
-div[data-testid="stExpander"]{background:#fff;border-radius:13px}
-.footer{border-top:1px solid #D9EDF0;color:#86A4AA;text-align:center;margin-top:40px;padding-top:18px;font-size:.75rem}
-@media(max-width:700px){.intro h1{font-size:1.65rem}.mod-card{min-height:145px;padding:16px 5px}.mod-icon{width:70px;height:70px}.mod-icon img{width:56px;height:56px}.mod-title{font-size:1rem}.mod-en{font-size:.62rem}}
+header[data-testid="stHeader"]{background:transparent}
+.block-container{max-width:1190px!important;padding-top:1rem!important;padding-bottom:3rem!important}
+#MainMenu,footer{visibility:hidden}
+.site-head{display:flex;align-items:center;justify-content:space-between;padding:22px 30px;border:1px solid #006f85;border-radius:20px;background:linear-gradient(105deg,#006c83,#0097aa);box-shadow:0 14px 32px rgba(0,104,125,.18)}
+.brand{display:flex;align-items:center;gap:12px}
+.brandmark{width:44px;height:44px;border-radius:13px;background:#a3e4e7;color:#006b80;font-size:25px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.brandtitle{font-size:1.45rem;color:white;font-weight:800;letter-spacing:-.04em;line-height:1.2}
+.brandsub{font-size:.69rem;color:#d4f4f5;letter-spacing:.055em;margin-top:3px}
+.headright{font-size:.75rem;color:#dcf7f8;font-weight:600}
+.intro{padding:49px 0 37px;text-align:center}
+.kicker{font-size:.78rem;color:#007e96;font-weight:800;letter-spacing:.15em}
+.intro h1{font-size:2.55rem!important;color:#173c49!important;margin:12px 0 10px;line-height:1.35;font-weight:800}
+.intro p{font-size:.99rem;color:#6b8a94;margin:0}
+.modcard{height:285px;background:linear-gradient(145deg,#ffffff 0%,#dcf3f5 100%);border:1px solid #b7e1e6;border-top:5px solid #00849b;border-radius:24px;padding:32px 22px 18px;box-shadow:0 16px 35px rgba(0,104,125,.14);text-align:center;transition:transform .2s,box-shadow .2s}
+.modcard:hover{transform:translateY(-4px);box-shadow:0 17px 32px rgba(20,81,96,.11)}
+.modvisual{width:126px;height:116px;margin:0 auto 13px;display:flex;align-items:center;justify-content:center;background:linear-gradient(140deg,#d1eef2,#aee0e6);border-radius:22px}
+.modvisual svg{width:100px;height:100px}
+.modname{font-size:1.5rem;font-weight:800;color:#075d72}
+.moddesc{font-size:.79rem;color:#7995a0;margin-top:4px}
+div.stButton>button{background:#007e96!important;color:white!important;border:1px solid #007e96!important;border-radius:12px!important;font-weight:700!important;min-height:48px!important;width:100%!important;box-shadow:0 5px 12px rgba(0,126,150,.13)}
+div.stButton>button:hover{background:#00687d!important;border-color:#00687d!important;color:white!important}
+[data-testid="stHorizontalBlock"]{gap:22px}
+.sectiontitle{margin:26px 0 12px;color:#174656;font-weight:800;font-size:1.4rem}
+.subcard{height:122px;border:1px solid #b7e1e6;background:linear-gradient(140deg,#ffffff,#e0f4f6);border-radius:16px;padding:19px 17px}
+.subcard h3{font-size:1.05rem;margin:0 0 8px;color:#126c80}
+.subcard p{font-size:.82rem;color:#7b969e;line-height:1.6;margin:0}
+.note{text-align:center;color:#59858f;font-size:.76rem;margin-top:45px}
+@media(max-width:700px){.intro{padding:28px 0}.intro h1{font-size:1.65rem!important}.headright{display:none}.modcard{height:220px}.block-container{padding-left:1rem!important;padding-right:1rem!important}}
 </style>
-''',unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-if "section" not in st.session_state:
-    st.session_state.section = None
-if "subcategory" not in st.session_state:
-    st.session_state.subcategory = None
+ICONS = {
+"X-quang": """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="23" y="8" width="54" height="84" rx="8" stroke="#007E96" stroke-width="3.5"/><path d="M50 20v62" stroke="#007E96" stroke-width="3"/><path d="M46 33c-14-14-20-2-20 15 0 17 9 24 20 24V33ZM54 33c14-14 20-2 20 15 0 17-9 24-20 24V33Z" fill="#92D7DB" fill-opacity=".75" stroke="#007E96" stroke-width="2.5"/><path d="M33 45l13 5m-13 7 13 3m21-15-13 5m13 7-13 3" stroke="white" stroke-width="2.5"/></svg>""",
+"CT": """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="8" width="72" height="76" rx="17" fill="#E0F3F5" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="43" r="25" fill="white" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="43" r="17" stroke="#92D7DB" stroke-width="5"/><path d="M50 62v28m-22 0h44" stroke="#007E96" stroke-width="4" stroke-linecap="round"/><rect x="35" y="61" width="30" height="9" rx="4" fill="#92D7DB" stroke="#007E96" stroke-width="2"/></svg>""",
+"MRI": """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="7" width="76" height="81" rx="19" fill="#E0F3F5" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="44" r="27" fill="white" stroke="#007E96" stroke-width="3.5"/><circle cx="50" cy="44" r="18" fill="#D4EFF2" stroke="#92D7DB" stroke-width="3"/><path d="M50 52v35m-28 0h56" stroke="#007E96" stroke-width="4" stroke-linecap="round"/><path d="M38 65h24l8 15H30l8-15Z" fill="white" stroke="#007E96" stroke-width="2.5"/></svg>"""
+}
+SUBS = {
+"X-quang": [("Quy trình chụp", "Tư thế chụp và kỹ thuật thực hiện"), ("Kỹ thuật X-quang", "Thông số và chất lượng hình ảnh"), ("Hình ảnh bệnh lý", "Nhận diện các dấu hiệu X-quang")],
+"CT": [("Quy trình chụp", "Các quy trình theo vùng giải phẫu"), ("Kỹ thuật CT", "Thông số và tái tạo hình ảnh"), ("Hình ảnh bệnh lý", "Dấu hiệu bệnh lý trên CT")],
+"MRI": [("Quy trình chụp", "Định vị lát cắt và chuỗi xung"), ("Kỹ thuật MRI", "Chuỗi xung và tối ưu hình ảnh"), ("Hình ảnh bệnh lý", "Dấu hiệu bệnh lý trên MRI")]
+}
+EN = {"X-quang":"RADIOGRAPHY", "CT":"COMPUTED TOMOGRAPHY", "MRI":"MAGNETIC RESONANCE"}
+if "modality" not in st.session_state: st.session_state.modality=None
+if "sub" not in st.session_state: st.session_state.sub=None
 
-def navigate(section=None, subcategory=None):
-    st.session_state.section = section
-    st.session_state.subcategory = subcategory
+def go(mod=None, sub=None):
+    st.session_state.modality=mod
+    st.session_state.sub=sub
     st.rerun()
 
-st.markdown('<div class="header"><div class="logo">✚</div><div><div class="brand">KTCĐHA</div><div class="brand-sub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div>',unsafe_allow_html=True)
-
-STRUCTURE = {
-    "X-quang": [("Quy trình chụp", "Tư thế và kỹ thuật thực hiện"), ("Kỹ thuật X-quang", "Thông số và chất lượng hình ảnh"), ("Hình ảnh bệnh lý", "Nhận diện dấu hiệu trên X-quang")],
-    "CT": [("Quy trình chụp", "Protocol theo vùng giải phẫu"), ("Kỹ thuật CT", "Tái tạo, thông số và tối ưu liều"), ("Hình ảnh bệnh lý", "Đặc điểm hình ảnh cắt lớp vi tính")],
-    "MRI": [("Quy trình chụp", "Định vị, chuỗi xung và vùng giải phẫu"), ("Kỹ thuật MRI", "Chuỗi xung và tối ưu chất lượng ảnh"), ("Hình ảnh bệnh lý", "Các dấu hiệu bệnh lý trên MRI")]
-}
-EN = {"X-quang":"Radiography","CT":"Computed Tomography","MRI":"Magnetic Resonance Imaging"}
-SVG_ICONS = {'X-quang': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><rect x="18" y="10" width="64" height="80" rx="10" stroke="#00849B" stroke-width="3"/><path d="M50 19v62M50 33c-10-11-24-8-24 5v13c0 13 9 17 24 19M50 33c10-11 24-8 24 5v13c0 13-9 17-24 19" stroke="#00849B" stroke-width="3" stroke-linecap="round"/><path d="M33 35l17 11 17-11M31 45l19 9 19-9M34 55l16 8 16-8" stroke="#71C9D1" stroke-width="2.5" stroke-linecap="round"/><path d="M39 75h22" stroke="#00849B" stroke-width="3" stroke-linecap="round"/></svg>', 'CT': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><rect x="13" y="10" width="74" height="70" rx="17" stroke="#00849B" stroke-width="4"/><circle cx="50" cy="45" r="24" stroke="#00849B" stroke-width="4"/><circle cx="50" cy="45" r="17" stroke="#71C9D1" stroke-width="3"/><path d="M50 58v31M27 89h46M32 72h36" stroke="#00849B" stroke-width="4" stroke-linecap="round"/><rect x="39" y="57" width="22" height="10" rx="4" fill="#D6F1F3" stroke="#00849B" stroke-width="2"/><path d="M77 24h4" stroke="#71C9D1" stroke-width="3" stroke-linecap="round"/></svg>', 'MRI': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><rect x="14" y="8" width="72" height="77" rx="18" stroke="#00849B" stroke-width="4"/><circle cx="50" cy="43" r="25" stroke="#00849B" stroke-width="4"/><circle cx="50" cy="43" r="18" stroke="#71C9D1" stroke-width="3"/><path d="M50 43v32M22 78h56M30 85h40" stroke="#00849B" stroke-width="3.5" stroke-linecap="round"/><path d="M38 65h24l8 13H30l8-13Z" fill="#D6F1F3" stroke="#00849B" stroke-width="2"/><path d="M40 26c5-4 15-4 20 0" stroke="#71C9D1" stroke-width="3" stroke-linecap="round"/></svg>'}
-ICONS = {name: "data:image/svg+xml;base64," + base64.b64encode(source.encode("utf-8")).decode("ascii") for name, source in SVG_ICONS.items()}
-
-def show_article(a):
-    st.markdown(a.get("content", "Đang cập nhật nội dung."))
-    refs = a.get("references", [])
-    if isinstance(refs, list):
-        for link in refs:
-            if isinstance(link,str) and link.startswith(("https://","http://")):
-                st.markdown(f"Nguồn: {link}")
-    st.caption("Chỉ dùng cho mục đích đào tạo; cần kiểm tra nguồn và quy trình tại cơ sở.")
-
-def category_match(article, sub):
-    category = str(article.get("category","")).casefold()
-    if sub == "Quy trình chụp":
-        return any(x in category for x in ("quy trình","protocol","planning"))
-    if sub in ("Kỹ thuật MRI","Kỹ thuật CT","Kỹ thuật X-quang"):
-        return any(x in category for x in ("kỹ thuật","technical","image characteristics","sequence"))
-    return any(x in category for x in ("bệnh lý","pathology"))
-
-section = st.session_state.section
-sub = st.session_state.subcategory
-if section is None:
-    st.markdown('<div class="intro"><div class="eyebrow">KTCĐHA • BY HUUHUY</div><h1>Thư viện Kỹ thuật Chẩn đoán Hình ảnh</h1><p>Lựa chọn chuyên ngành để bắt đầu khám phá</p></div>',unsafe_allow_html=True)
-    cols=st.columns(3,gap="medium")
-    for col,name in zip(cols,["X-quang","CT","MRI"]):
+st.markdown('<div class="site-head"><div class="brand"><div class="brandmark">✚</div><div><div class="brandtitle">KTCĐHA</div><div class="brandsub">THƯ VIỆN KỸ THUẬT CHẨN ĐOÁN HÌNH ẢNH</div></div></div><div class="headright">BY HUUHUY</div></div>', unsafe_allow_html=True)
+mod=st.session_state.modality
+sub=st.session_state.sub
+if mod is None:
+    st.markdown('<div class="intro"><div class="kicker">KHÁM PHÁ CHUYÊN NGÀNH</div><h1>Thư viện Chẩn đoán Hình ảnh</h1><p>Chọn một chuyên ngành để xem các nội dung đào tạo</p></div>', unsafe_allow_html=True)
+    cols=st.columns(3, gap="large")
+    for col,name in zip(cols,("X-quang","CT","MRI")):
         with col:
-            st.markdown(f'<div class="mod-card"><div class="mod-icon"><img src="{ICONS[name]}" alt="Biểu tượng {name}" width="72" height="72"></div><div class="mod-title">{name}</div><div class="mod-en">{EN[name]}</div></div>',unsafe_allow_html=True)
-            if st.button(f"Khám phá {name}",key=f"nav-{name}"):
-                navigate(name)
+            st.markdown(f'<div class="modcard"><div class="modvisual">{ICONS[name]}</div><div class="modname">{name}</div><div class="moddesc">{EN[name]}</div></div>', unsafe_allow_html=True)
+            if st.button(f"VÀO THƯ VIỆN {name.upper()}  →", key=f"open-{name}"):
+                go(name)
 elif sub is None:
-    if st.button("← Về trang chủ",key="back-home"):
-        navigate()
-    st.title(section)
-    st.caption("Chọn nhóm nội dung muốn tìm hiểu.")
-    cols=st.columns(3)
-    for col,(name,description) in zip(cols,STRUCTURE[section]):
+    if st.button("← TRANG CHỦ", key="home"): go()
+    st.markdown(f'<div class="sectiontitle">THƯ VIỆN {mod.upper()}</div>', unsafe_allow_html=True)
+    st.caption("Chọn nhóm kiến thức để xem danh sách bài học")
+    cols=st.columns(3,gap="large")
+    for col,(title,desc) in zip(cols,SUBS[mod]):
         with col:
-            st.markdown(f'<div class="section-card"><strong>{name}</strong><p>{description}</p></div>',unsafe_allow_html=True)
-            if st.button("Xem nội dung",key=f"cat-{section}-{name}"):
-                navigate(section,name)
+            st.markdown(f'<div class="subcard"><h3>{title}</h3><p>{desc}</p></div>',unsafe_allow_html=True)
+            if st.button(f"Xem {title.lower()} →",key=title):
+                go(mod,title)
 else:
-    if st.button(f"← Quay lại {section}",key="back-section"):
-        navigate(section)
-    st.title(f"{sub} · {section}")
-    query=st.text_input("Tìm bài học",placeholder="Nhập từ khóa hoặc tên vùng giải phẫu...")
-    items=[a for a in ARTICLES if a.get("modality")==section and category_match(a,sub)]
-    if query.strip():
-        q=query.strip().casefold()
-        items=[a for a in items if q in " ".join(str(a.get(k,"")) for k in ("title","summary","content","category")).casefold()]
+    if st.button(f"← QUAY LẠI {mod.upper()}",key="back"): go(mod)
+    st.markdown(f'<div class="sectiontitle">{sub} / {mod}</div>',unsafe_allow_html=True)
+    q=st.text_input("Tìm bài học",placeholder="Nhập tên bài hoặc từ khóa...")
+    def matches(a):
+        cat=str(a.get("category","")).casefold()
+        if sub=="Quy trình chụp": return any(x in cat for x in ("quy trình","protocol","planning"))
+        if sub.startswith("Kỹ thuật"): return any(x in cat for x in ("kỹ thuật","technical","sequence","image characteristics"))
+        return any(x in cat for x in ("bệnh lý","pathology"))
+    items=[a for a in ARTICLES if a.get("modality")==mod and matches(a)]
+    if q.strip():
+        items=[a for a in items if q.casefold() in " ".join(str(a.get(k,"")) for k in ("title","category","summary","content")).casefold()]
     st.caption(f"{len(items)} bài học")
     if not items:
-        st.info("Chuyên mục đã sẵn sàng. Nội dung sẽ được bổ sung khi có tài liệu nguồn được kiểm chứng.")
+        st.info("Chưa có bài học thuộc mục này. Có thể bổ sung nội dung sau.")
     for a in items:
         with st.expander(a.get("title","Bài học")):
-            show_article(a)
-
-st.markdown('<div class="footer">KTCĐHA by HUUHUY · Nền tảng học tập hình ảnh y học · Không thay thế quy trình bệnh viện</div>',unsafe_allow_html=True)
+            st.markdown(a.get("content",""))
+            for ref in a.get("references",[]):
+                if isinstance(ref,str) and ref.startswith(("http://","https://")):
+                    st.markdown(f"Nguồn: {ref}")
+            st.caption("Nội dung học tập; cần kiểm tra trước khi áp dụng thực hành.")
+st.markdown('<div class="note">KTCĐHA • BY HUUHUY · THƯ VIỆN HỌC TẬP CHẨN ĐOÁN HÌNH ẢNH</div>',unsafe_allow_html=True)
