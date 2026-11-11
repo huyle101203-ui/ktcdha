@@ -1,0 +1,51 @@
+[
+  {
+    "id": "mri-tr-te",
+    "modality": "MRI",
+    "category": "Thông số kỹ thuật",
+    "title": "TR và TE trong MRI",
+    "summary": "Hai thông số thời gian quan trọng điều khiển tương phản ảnh MRI.",
+    "content": "**TR (Repetition Time)** là khoảng thời gian giữa các lần kích thích RF liên tiếp của cùng một lát cắt trong nhiều chuỗi xung. **TE (Echo Time)** là khoảng thời gian từ xung kích thích đến tâm tín hiệu echo.\\n\\nTrong spin echo thông thường, TR ngắn và TE ngắn tạo ưu thế tương phản T1; TR dài và TE dài tạo ưu thế tương phản T2. Hiệu ứng phụ thuộc loại chuỗi xung và các thông số khác.\\n\\n**Lưu ý:** Cần điều chỉnh theo máy, vùng chụp và mục tiêu lâm sàng.",
+    "references": [
+      "https://mrimaster.com/"
+    ]
+  },
+  {
+    "id": "mri-nex",
+    "modality": "MRI",
+    "category": "Thông số kỹ thuật",
+    "title": "NEX/NSA và chất lượng ảnh",
+    "summary": "Số lần thu nhận tín hiệu và sự đánh đổi giữa SNR với thời gian chụp.",
+    "content": "**NEX/NSA** biểu thị số lần trung bình hóa tín hiệu thu nhận. Trong điều kiện các yếu tố khác không đổi, SNR thường tăng gần theo căn bậc hai của NEX; thời gian thu nhận thường tăng theo NEX.\\n\\nVí dụ tăng NEX từ 1 lên 4 có thể cải thiện SNR xấp xỉ 2 lần, đồng thời tăng thời gian thu nhận tương ứng ở các thiết lập thông thường.",
+    "references": [
+      "https://mrimaster.com/"
+    ]
+  },
+  {
+    "id": "ct-pitch",
+    "modality": "CT",
+    "category": "Thông số kỹ thuật",
+    "title": "Pitch trong CT xoắn ốc",
+    "summary": "Tỷ lệ bước tiến bàn với tổng độ rộng chùm tia chuẩn trực.",
+    "content": "Trong CT xoắn ốc, **pitch** thường được định nghĩa là quãng đường bàn di chuyển trong một vòng quay chia cho tổng độ rộng chùm tia chuẩn trực tại tâm quay.\\n\\nPitch ảnh hưởng đến lấy mẫu dữ liệu, chất lượng ảnh và liều chiếu; mức ảnh hưởng thực tế phụ thuộc công nghệ máy và điều khiển dòng bóng tự động.",
+    "references": []
+  },
+  {
+    "id": "xr-exposure",
+    "modality": "X-quang",
+    "category": "Thông số kỹ thuật",
+    "title": "kVp và mAs trong X-quang",
+    "summary": "Các yếu tố kỹ thuật ảnh hưởng đến xuyên thấu và lượng photon.",
+    "content": "**kVp** liên quan đến năng lượng phổ tia X và khả năng xuyên thấu. **mAs** là tích dòng bóng và thời gian phát tia, liên quan đến số lượng photon phát ra.\\n\\nLựa chọn thông số phải cân bằng chất lượng ảnh và liều bức xạ, theo quy trình được phê duyệt tại cơ sở.",
+    "references": []
+  },
+  {
+    "id": "mri-brain",
+    "modality": "MRI",
+    "category": "Quy trình chụp",
+    "title": "Quy trình MRI sọ não – khung tham khảo",
+    "summary": "Các bước chuẩn bị, sàng lọc an toàn và nhóm chuỗi xung thường gặp.",
+    "content": "1. Xác nhận chỉ định, danh tính và sàng lọc an toàn MRI, đặc biệt thiết bị cấy ghép và vật kim loại.\\n2. Giải thích quy trình, chuẩn bị bệnh nhân và đặt coil đầu phù hợp.\\n3. Định vị và thu nhận các chuỗi xung theo chỉ định: thường gồm T1, T2, FLAIR, DWI/ADC; các chuỗi bổ sung tùy câu hỏi lâm sàng.\\n4. Kiểm tra nhiễu, chuyển động và độ bao phủ trước khi kết thúc.\\n\\n**Đây không phải protocol sử dụng trực tiếp:** thông số và chỉ định tiêm thuốc cần theo quy định cơ sở và bác sĩ phụ trách.",
+    "references": []
+  }
+]
