@@ -3297,11 +3297,27 @@ def render_ktc_article(article):
     for chunk in chunks:
         if chunk.startswith("[[KTC_IMAGE:") and chunk.endswith("]]"):
             rel = chunk[len("[[KTC_IMAGE:"):-2].strip()
-            path = (BASE / rel).resolve()
-            if path.is_relative_to((BASE / "images").resolve()) and path.is_file():
-                st.image(str(path), use_container_width=True)
+            # Prefer the canonical images/ path; support older GitHub uploads
+            # where image files were accidentally placed at repository root.
+            rel_path = Path(rel)
+            candidates = []
+            if not rel_path.is_absolute() and ".." not in rel_path.parts:
+                candidates = [
+                    BASE / rel_path,
+                    BASE / "images" / rel_path.name,
+                    BASE / rel_path.name,
+                ]
+            image_path = next(
+                (candidate for candidate in candidates
+                 if candidate.resolve().is_relative_to(BASE.resolve())
+                 and candidate.is_file()),
+                None,
+            )
+            if image_path is not None:
+                st.image(str(image_path), use_container_width=True)
             else:
-                st.caption("Hình minh họa chưa được tải lên: " + Path(rel).name)
+                st.caption("Không tìm thấy hình minh họa: " + rel_path.name)
+                st.caption("Đường dẫn cần có: " + rel)
         elif chunk.strip():
             st.markdown(chunk)
 
@@ -4143,9 +4159,9 @@ def internal_log_page():
     total20 = f20_boxes*125 + f20_room
     st.markdown(f'<div class="shift-total">Σ Phim 20×25 = {f20_boxes} × 125 + {f20_room} = {total20:,} phim</div>',unsafe_allow_html=True)
     remaining20 = st.number_input("Phim 20×25 tồn trên hệ thống",min_value=0,step=1,key="shift-f20-remaining")
-    used20 = total20 - remaining20
+    used20 = remaining20 - total20
     st.metric("Sử dụng phim 20×25",f"{used20:,} phim")
-    if used20 < 0: st.warning("Số phim tồn trên hệ thống lớn hơn tổng phim tính được. Vui lòng kiểm tra số liệu.")
+    if used20 < 0: st.warning("Tổng phim 20×25 tính được lớn hơn số phim tồn trên hệ thống. Vui lòng kiểm tra số liệu.")
 
     st.markdown('<div class="shift-subhead">6. Tổng hợp giao ban</div>', unsafe_allow_html=True)
     st.write(f"**Ngày:** {work_day.strftime('%d/%m/%Y')}  |  **CT:** {ct_cases} ca  |  **MRI:** {mri_cases} ca")
