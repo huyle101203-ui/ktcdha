@@ -4209,9 +4209,22 @@ def internal_log_page():
       <h2>Báo cáo giao ban {e(date_text)}</h2>
       <div class="summary">
         <p>– XQ: .......... ca</p>
+        <div class="report-branch">
+          <div class="branch-label">Nhũ ảnh:</div>
+          <div class="branch-items">
+            <p>↳ 2D: .......... ca</p>
+            <p>↳ 3D: .......... ca</p>
+          </div>
+        </div>
         <p>– CT: .......... ca</p>
         <p>– MRI: .......... ca</p>
-        <p>– Siêu âm: Σ .......... <span class="side">SACC: .......... · SUP: ..........</span></p>
+        <p>– Siêu âm: .......... ca</p>
+        <div class="report-branch">
+          <div class="branch-items">
+            <p>↳ Siêu âm cấp cứu: .......... ca</p>
+            <p>↳ Siêu âm 4D: .......... ca</p>
+          </div>
+        </div>
       </div>
     </div>"""
     a4_style = """
@@ -4224,7 +4237,12 @@ def internal_log_page():
     h2{text-align:center;font-size:19px;margin:28px 0 18px;color:#153b4b}
     p{margin:5px 0}section{margin-top:22px}.indent{padding-left:75px}
     .sum{float:right;color:#006e86}.side{float:right}.hint{font-size:12px;color:#68808a}
-    .summary{max-width:450px;margin:auto}.summary p{margin:9px 0}
+    .summary{max-width:490px;margin:auto}.summary p{margin:8px 0}
+    .report-branch{display:flex;gap:10px;align-items:flex-start;margin:3px 0 13px 22px;
+      break-inside:avoid}
+    .branch-label{min-width:110px;padding-top:4px;font-weight:600}
+    .branch-items{border-left:2px solid #b4cdd3;padding-left:13px}
+    .branch-items p{margin:2px 0 7px;white-space:nowrap}
     .print-toolbar{text-align:center;padding:14px}
     .print-toolbar button{background:#007e96;color:#fff;border:0;padding:12px 22px;
        font-size:15px;border-radius:10px;cursor:pointer}
