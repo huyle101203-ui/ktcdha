@@ -3390,11 +3390,7 @@ def go(mod=None, sub=None):
 
 # Danh mục tiêu đề kỹ thuật X-quang. Đây chỉ là tên bài, không phải nội dung kỹ thuật.
 XRAY_CHEST_GROUP = "Kỹ thuật chụp X-quang phổi"
-XRAY_CHEST_VIEWS = [
-    "Kỹ thuật chụp X-quang ngực thẳng",
-    "Kỹ thuật chụp X-quang ngực nghiêng",
-    "Kỹ thuật chụp X-quang ngực chếch",
-]
+XRAY_CHEST_VIEWS = []  # Đã thay bằng bài giảng lồng ngực 148 slide
 XRAY_TECHNIQUES = [
     XRAY_CHEST_GROUP,
     "Kỹ thuật chụp X-quang cột sống cổ",
@@ -3722,6 +3718,36 @@ def xray_library():
     chosen = st.session_state.xray_article
     group = st.session_state.xray_group
     if chosen is None:
+        if group == XRAY_CHEST_GROUP:
+            # Bài giảng lồng ngực: trình bày nguyên thứ tự slide, không tách thẳng/nghiêng/chếch.
+            if st.button("← DANH SÁCH KỸ THUẬT", key="xray-group-back"):
+                st.session_state.xray_group = None
+                st.rerun()
+            slide_data_path = BASE / "articles_xquang_long_nguc.json"
+            if not slide_data_path.exists():
+                st.warning("Thiếu articles_xquang_long_nguc.json. Hãy tải đủ các tệp trong gói v51 lên GitHub.")
+                return
+            try:
+                slide_data = json.loads(slide_data_path.read_text(encoding="utf-8"))
+                chapters = slide_data["chapters"]
+            except (OSError, ValueError, KeyError, TypeError):
+                st.error("Không đọc được mục lục bài giảng X-quang lồng ngực.")
+                return
+            st.title("Kỹ thuật chụp X-quang phổi")
+            st.caption(slide_data.get("source", "") + " · 148 slide")
+            st.info("Bài giảng được giữ theo nguyên thứ tự slide gốc, bao gồm cả kỹ thuật phổi thẳng, nghiêng, chếch, cấp cứu, nhi và các kỹ thuật vùng lồng ngực.")
+            choices = [f"{x['name']} (slide {x['start']}–{x['end']})" for x in chapters]
+            selected = st.selectbox("Chọn phần bài giảng", choices, key="xray_chest_slide_chapter")
+            section = chapters[choices.index(selected)]
+            for number in range(int(section["start"]), int(section["end"])+1):
+                figure = BASE / "images" / "xquang-long-nguc" / f"slide-{number:03d}.jpg"
+                if figure.is_file():
+                    st.caption(f"Slide {number}/{slide_data.get('total_slides', 148)}")
+                    st.image(str(figure), use_container_width=True)
+                else:
+                    st.warning(f"Thiếu hình slide {number:03d}.")
+            st.caption("Nguồn: Bài 7 – Lồng ngực, CN. Tôn Thất Nam Anh, Bệnh viện Đại học Y Dược Huế. Thông số trong bài giảng mang tính tham khảo, cần đối chiếu quy trình và thiết bị hiện hành.")
+            return
         if group == XRAY_CHEST_GROUP:
             if st.button("← DANH SÁCH KỸ THUẬT", key="xray-group-back"):
                 st.session_state.xray_group = None
